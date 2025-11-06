@@ -8,7 +8,7 @@ from pydantic import Field, field_validator
 
 from agency_swarm import BaseTool
 
-from ad_factory_agent.tools.utils.image_utils import (
+from ugc_agent.tools.utils.image_utils import (
     IMAGES_DIR,
     MODEL_NAME,
     extract_image_from_response,

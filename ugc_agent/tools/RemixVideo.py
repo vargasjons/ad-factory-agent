@@ -5,7 +5,7 @@ from pydantic import Field, field_validator
 
 from agency_swarm import BaseTool
 
-from ad_factory_agent.tools.utils.video_utils import (
+from ugc_agent.tools.utils.video_utils import (
     ensure_not_blank,
     get_openai_client,
     save_video_with_metadata,
