@@ -7,7 +7,7 @@ from pydantic import Field, field_validator
 
 from agency_swarm import BaseTool
 
-from ad_factory_agent.tools.utils.video_utils import (
+from ugc_agent.tools.utils.video_utils import (
     SORA_MODEL,
     ensure_not_blank,
     get_openai_client,

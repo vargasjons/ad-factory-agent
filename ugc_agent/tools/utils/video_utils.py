@@ -123,7 +123,7 @@ def resolve_input_reference(reference: Optional[str], target_size: Optional[str]
             filename = path.name
         else:
             # Try as image name without extension in multiple directories
-            from ad_factory_agent.tools.utils.image_utils import load_image_by_name, IMAGES_DIR
+            from ugc_agent.tools.utils.image_utils import load_image_by_name, IMAGES_DIR
             
             pil_image = None
             image_path = None
@@ -226,7 +226,7 @@ def create_image_output(image_path: str, label: str) -> list:
     Returns:
         List containing ToolOutputText and ToolOutputImage objects
     """
-    from ad_factory_agent.tools.utils.image_utils import compress_image_for_base64
+    from ugc_agent.tools.utils.image_utils import compress_image_for_base64
     
     image = Image.open(image_path)
     compressed_b64 = compress_image_for_base64(image)

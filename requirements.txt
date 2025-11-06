@@ -8,5 +8,6 @@ pillow
 opencv-python
 httpx
 moviepy
+openai-whisper
 google-genai
 

@@ -7,13 +7,13 @@ from openai.types.shared.reasoning import Reasoning
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def create_ad_factory_agent(model:str = "gpt-5-mini", reasoning_effort: str = "medium") -> Agent:
-    """Factory that returns a fresh QAAgent instance.
+def create_ugc_agent(model:str = "gpt-5-mini", reasoning_effort: str = "medium") -> Agent:
+    """Factory that returns a fresh UGCAgent instance.
     Use this in tests to avoid reusing a singleton across multiple agencies.
     """
     return Agent(
-        name="AdFactoryAgent",
-        description="An agent that generates advertisement videos and images.",
+        name="UGCAgent",
+        description="An agent that generates UGC-style advertisement videos and images.",
         instructions="instructions.md",
         tools_folder="./tools",
         model=model,
@@ -28,6 +28,6 @@ if __name__ == "__main__":
 
     load_dotenv()
     
-    agent = create_ad_factory_agent()
+    agent = create_ugc_agent()
     agency = Agency(agent)
     agency.terminal_demo()
