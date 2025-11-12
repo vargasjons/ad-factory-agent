@@ -28,15 +28,23 @@ pip install -r requirements.txt
 
 ### 3. Set Up Environment Variables
 
-Create a `.env` file in the root directory:
+Copy `.env.example` to `.env` and add your API keys:
 
 ```bash
-# Required
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Optional - Add any additional API keys your agents need
-# EXAMPLE_API_KEY=your_api_key_here
+cp .env.example .env
 ```
+
+Then edit `.env` with your actual API keys:
+
+```bash
+# Required: OpenAI API Key
+OPENAI_API_KEY=sk-your-actual-key-here
+
+# Required: Google AI API Key
+GOOGLE_API_KEY=your-actual-key-here
+```
+
+See `ENV_VARIABLES.md` for detailed information about each API key.
 
 ### 4. Test the Example Agency
 
@@ -47,6 +55,44 @@ python agency.py
 This runs the example agency in terminal mode for testing.
 
 > **💡 Pro Tip**: For creating your own agency, open this template in [Cursor IDE](https://cursor.sh/) and use the AI assistant with the `.cursor/rules/workflow.mdc` file for automated agency creation!
+
+---
+
+## 🎨 Client Customization (Onboarding)
+
+This agency is **fully productized** and can be easily customized for different clients!
+
+### Quick Customization
+
+```bash
+# 1. Customize the agency for a new client
+python onboarding_tool.py
+
+# 2. Test your configuration
+python test_onboarding.py
+
+# 3. Run your customized agency
+python agency.py
+```
+
+### What Can Be Customized?
+
+- **Company Information**: Name, industry, brand voice
+- **Target Audience**: Demographics and psychographics  
+- **Product Category**: Type of products/services
+- **Business Goals**: Primary and secondary objectives
+- **Brand Guidelines**: Visual style, colors
+- **AI Models**: Choose models for each agent (gpt-5, gpt-4.1)
+- **Reasoning Effort**: Configure reasoning levels (low, medium, high)
+- **Output Preferences**: Script format preferences
+
+### Learn More
+
+See **[ONBOARDING.md](ONBOARDING.md)** for complete customization guide including:
+- Detailed configuration options
+- Managing multiple client configs
+- Best practices
+- Advanced usage examples
 
 ---
 

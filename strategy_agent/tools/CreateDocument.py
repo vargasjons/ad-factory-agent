@@ -4,7 +4,12 @@ import os
 from pathlib import Path
 
 # Define the files directory as a constant
-FILES_DIR = Path(__file__).parent.parent / "strategy_agent_files"
+# Use container path in production, local path for development
+if os.path.exists("/app"):
+    FILES_DIR = Path("/app/mnt/strategy_agent_files")
+else:
+    # Local development - use path relative to project root
+    FILES_DIR = Path(__file__).parent.parent.parent / "mnt" / "strategy_agent_files"
 
 class CreateDocument(BaseTool):
     """
@@ -52,7 +57,7 @@ class CreateDocument(BaseTool):
         Returns a success message with the file path.
         """
         # Step 1: Create files directory if it doesn't exist
-        FILES_DIR.mkdir(exist_ok=True)
+        FILES_DIR.mkdir(parents=True, exist_ok=True)
         
         # Step 2: Create full file path
         file_path = FILES_DIR / self.filename

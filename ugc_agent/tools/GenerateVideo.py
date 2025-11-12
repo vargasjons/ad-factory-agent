@@ -18,6 +18,9 @@ from ugc_agent.tools.utils.video_utils import (
 
 
 class GenerateVideo(BaseTool):
+    """
+    Generates a video using OpenAI's Sora 2 API and saves to local filesystem.
+    """
     prompt: str = Field(
         ...,
         description=(
@@ -114,8 +117,8 @@ if __name__ == "__main__":
         ),
         seconds="4",
         size="1280x720",
-        name="welcome_to_the_future_of_ai",
-        # input_reference="laptop_last_frame",
+        name="test_image",
+        input_reference="D:/work/VRSEN/code/ad-factory-agent/mnt/generated_images/test_image.png",
     )
     try:
         result = tool.run()

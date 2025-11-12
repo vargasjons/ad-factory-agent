@@ -13,7 +13,7 @@ def create_strategy_agent(model: str = "gpt-5", reasoning_effort: str = "high") 
     """
     return Agent(
         name="StrategyAgent",
-        description="Entry point agent responsible for conducting deep research and creating foundational strategic documents (Avatar Sheet, Necessary Beliefs, Offer Brief, Research) that guide all ad creation.",
+        description="Performs market research and creates the foundational documents that guide ad creation.",
         instructions="instructions.md",
         model=model,
         tools_folder="./tools",

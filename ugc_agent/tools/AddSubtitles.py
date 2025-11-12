@@ -412,14 +412,16 @@ class AddSubtitles(BaseTool):
         print(f"Duration: {video.duration:.1f}s")
         print(f"Subtitle chunks: {len(subtitle_clips)}")
         print(f"Transcribed text: {transcript.text[:100]}...")
-
+        
         return (
             f"Successfully added animated subtitles to {self.video_name}.mp4\n\n"
             f"Output: {output_name}.mp4\n"
-            f"Duration: {video.duration:.1f} seconds\n"
-            f"Subtitle chunks: {len(subtitle_clips)}\n"
-            f"Style: {self.highlight_color.upper()} text, {self.words_per_clip} words per clip\n"
-            f"Transcribed: {transcript.text[:200]}..."
+            f"Path: {output_path}\n\n"
+            f"Details:\n"
+            f"  - Duration: {video.duration:.1f} seconds\n"
+            f"  - Subtitle chunks: {len(subtitle_clips)}\n"
+            f"  - Style: {self.highlight_color.upper()} text, {self.words_per_clip} words per clip\n"
+            f"  - Transcribed: {transcript.text[:200]}..."
         )
 
 

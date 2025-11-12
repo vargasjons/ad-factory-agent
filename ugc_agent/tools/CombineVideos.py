@@ -6,7 +6,7 @@ import tempfile
 
 from pydantic import Field, field_validator
 
-from agency_swarm import BaseTool
+from agency_swarm import BaseTool, ToolOutputText
 
 from ugc_agent.tools.utils.video_utils import VIDEO_DIR
 
@@ -104,17 +104,15 @@ class CombineVideos(BaseTool):
                 os.unlink(concat_file)
             except Exception:
                 pass
-
-        # Step 4: Create output summary
-        from agency_swarm import ToolOutputText
         
         output = []
         
-        # Add summary of combined videos
-        summary = f"Successfully combined {len(self.video_names)} videos:\n"
+        # Add summary of combined videos with file path
+        summary = f"✅ Successfully combined {len(self.video_names)} videos:\n"
         for i, name in enumerate(self.video_names, 1):
             summary += f"  {i}. {name}.mp4\n"
-        summary += f"\nCombined video saved to `{self.name}.mp4`"
+        summary += f"\n📹 Output: {self.name}.mp4\n"
+        summary += f"Path: {output_path}"
         
         output.append(ToolOutputText(type="text", text=summary))
         

@@ -20,7 +20,13 @@ from agency_swarm import ToolOutputText, ToolOutputImage
 load_dotenv()
 
 SORA_MODEL = "sora-2"
-VIDEO_DIR = "./generated_videos"
+
+# Use container path in production, local path for development
+if os.path.exists("/app"):
+    VIDEO_DIR = "/app/mnt/generated_videos"
+else:
+    # Local development - use path relative to project root
+    VIDEO_DIR = str(Path(__file__).parent.parent.parent.parent / "mnt" / "generated_videos")
 
 def get_openai_client() -> OpenAI:
     """Instantiate an OpenAI client using the API key from the environment."""
@@ -221,7 +227,7 @@ def create_image_output(image_path: str, label: str) -> list:
     
     Args:
         image_path: Path to the image file
-        label: Label to display for the image
+        label: Label to display for the image (filename)
     
     Returns:
         List containing ToolOutputText and ToolOutputImage objects
@@ -232,7 +238,7 @@ def create_image_output(image_path: str, label: str) -> list:
     compressed_b64 = compress_image_for_base64(image)
     
     return [
-        ToolOutputText(type="text", text=f"{label}"),
+        ToolOutputText(type="text", text=f"{label}\nPath: {image_path}"),
         ToolOutputImage(type="image", image_url=f"data:image/png;base64,{compressed_b64}", detail="auto")
     ]
 
@@ -307,8 +313,8 @@ def save_video_with_metadata(client: OpenAI, video_id: str, name: str) -> list:
     if last_frame_image:
         output.extend(create_image_output(last_frame_path, f"{name}_last_frame.jpg"))
     
-    # Step 5: Add final summary message
-    output.append(ToolOutputText(type="text", text=f"Video saved to `{name}.mp4`, video id: {video_id}"))
+    # Step 5: Add final summary message with full path
+    output.append(ToolOutputText(type="text", text=f"Video saved to `{name}.mp4`\nPath: {video_path}\nVideo ID: {video_id}"))
     
     return output
 

@@ -1,13 +1,21 @@
 import os
 import io
 import base64
+from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from PIL import Image
 from agents.tool import ToolOutputImage, ToolOutputText
 
 # Constants
 MODEL_NAME = "gemini-2.5-flash-image-preview"
-IMAGES_DIR = "./generated_images"
+
+# Use container path in production, local path for development
+if os.path.exists("/app"):
+    IMAGES_DIR = "/app/mnt/generated_images"
+else:
+    # Local development - use path relative to project root
+    IMAGES_DIR = str(Path(__file__).parent.parent.parent.parent / "mnt" / "generated_images")
+
 OUTPUT_FORMAT = "png"
 
 
@@ -120,20 +128,36 @@ def run_parallel_variants(variant_func, num_variants):
 
 
 def create_result_summary(results, operation_name):
-    """Create result summary text"""
+    """Create result summary text with file paths"""    
     result_text = f"Generated {len(results)} variant(s) successfully!\n"
     for result in results:
-        result_text += f"Variant {result['variant']}: {result['file_path']}\n"
+        result_text += f"  - {result['image_name']} → {result['file_path']}\n"
     return result_text
 
 
 def create_image_urls(results, include_text_labels=False):
-    """Create image URLs array for agent output"""
+    """Create image URLs array for agent output with file paths"""    
     image_urls = []
     for result in results:
         if include_text_labels:
-            image_urls.append(ToolOutputText(type="text", text=f"{result['image_name']}:\n"))
-        image_urls.append(ToolOutputImage(type="image", image_url=f"data:image/png;base64,{result['base64']}", detail="auto"))
+            image_urls.append(ToolOutputText(
+                type="text", 
+                text=f"{result['image_name']}:\nPath: {result['file_path']}\n"
+            ))
+        else:
+            # For edit/combine tools, add file path before the image
+            image_urls.append(ToolOutputText(
+                type="text",
+                text=f"Path: {result['file_path']}"
+            ))
+        
+        # Add the base64 image preview
+        image_urls.append(ToolOutputImage(
+            type="image", 
+            image_url=f"data:image/png;base64,{result['base64']}", 
+            detail="auto"
+        ))
+    
     return image_urls
 
 
