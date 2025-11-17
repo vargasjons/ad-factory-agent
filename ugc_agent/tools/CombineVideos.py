@@ -8,12 +8,19 @@ from pydantic import Field, field_validator
 
 from agency_swarm import BaseTool, ToolOutputText
 
-from ugc_agent.tools.utils.video_utils import VIDEO_DIR
+from ugc_agent.tools.utils.video_utils import get_videos_dir
 
 
 class CombineVideos(BaseTool):
-    """Combine multiple videos into a single video using instant cut transitions (ffmpeg)."""
+    """Combine multiple videos into a single video using instant cut transitions (ffmpeg).
+    
+    Videos are saved to: mnt/{product_name}/generated_videos/
+    """
 
+    product_name: str = Field(
+        ...,
+        description="Name of the product these videos are for (e.g., 'Acme_Widget_Pro', 'Green_Tea_Extract'). Used to locate and save videos in product-specific folders.",
+    )
     video_names: list[str] = Field(
         ...,
         description="List of video file names (without extension) to combine in order.",
@@ -47,24 +54,26 @@ class CombineVideos(BaseTool):
 
         print(f"Combining {len(self.video_names)} videos: {', '.join(self.video_names)}")
 
-        # Step 1: Verify all video files exist and collect paths
+        # Step 1: Get product-specific videos directory
+        videos_dir = get_videos_dir(self.product_name)
+        
+        # Step 2: Verify all video files exist and collect paths
         video_paths = []
         
         for video_name in self.video_names:
-            video_path = os.path.join(VIDEO_DIR, f"{video_name}.mp4")
+            video_path = os.path.join(videos_dir, f"{video_name}.mp4")
             
             if not os.path.exists(video_path):
                 raise FileNotFoundError(
                     f"Video file not found: {video_path}. "
-                    f"Make sure the video exists in the {VIDEO_DIR} directory."
+                    f"Make sure the video exists in the {videos_dir} directory."
                 )
             
             print(f"Found video: {video_path}")
             video_paths.append(video_path)
 
-        # Step 2: Create output directory
-        os.makedirs(VIDEO_DIR, exist_ok=True)
-        output_path = os.path.join(VIDEO_DIR, f"{self.name}.mp4")
+        # Step 3: Create output path
+        output_path = os.path.join(videos_dir, f"{self.name}.mp4")
         
         # Step 3: Use ffmpeg concat demuxer for instant cuts
         print("Using ffmpeg concat demuxer for cut transitions...")
@@ -124,6 +133,7 @@ class CombineVideos(BaseTool):
 if __name__ == "__main__":
     # Example usage
     tool = CombineVideos(
+        product_name="Test_Product",
         video_names=["herbaluxe_01_hook_v2","herbaluxe_02_formula","herbaluxe_03_result_consistency_fix","herbaluxe_04_cta"],
         name="x_combine_test",
     )

@@ -99,6 +99,8 @@ To better understand the purpose and scope of the research, fully analyze 'Resea
 Create a comprehensive research document (minimum 6 pages) covering all areas above. Structure it with clear headings and synthesize findings into actionable insights.
 
 **Save as:** `[brand_name]_research_document.md` using `CreateDocument` tool
+- Use the product name for the `product_name` parameter (e.g., "Green_Tea_Extract", "Acme_Widget_Pro")
+- Documents are automatically organized into product-specific sub-folders
 
 **Important:** After saving, provide the complete file path to the user so they know where to access the document.
 
@@ -110,7 +112,9 @@ Using the research document, create a detailed customer avatar profile.
 
 Strictly follow the template provided in `Avatar_Sheet_Template.docx` document, retrieve it using `FileSearch` tool.
 
-**Save as:** `[brand_name]_avatar_sheet.md`  using `CreateDocument` tool
+**Save as:** `[brand_name]_avatar_sheet.md` using `CreateDocument` tool
+- Use the same product name as in Phase 2 for the `product_name` parameter
+- This ensures all documents for the same product are organized together
 
 **Important:** After saving, provide the complete file path to the user so they know where to access the document.
 
@@ -123,6 +127,8 @@ Document the product positioning, unique mechanism, and offer structure.
 Strictly follow the template provided in `Offer_Brief_Template.docx` document, retrieve it using `FileSearch` tool.
 
 **Save as:** `[brand_name]_offer_brief.md` using `CreateDocument` tool
+- Use the same product name as in previous phases for the `product_name` parameter
+- This ensures all documents for the same product are organized together
 
 **Important:** After saving, provide the complete file path to the user so they know where to access the document.
 
@@ -137,6 +143,8 @@ Inspect the `Necessary_Beliefs.docx` document using `FileSearch` tool to underst
 After that, based on all previously created documents, write out the few absolutely necessary beliefs that a prospect must have before purchasing my product. They should be structured as "I believe that…" statements.
 
 **Save as:** `[brand_name]_necessary_beliefs.md` using `CreateDocument` tool
+- Use the same product name as in previous phases for the `product_name` parameter
+- This ensures all documents for the same product are organized together
 
 **Important:** After saving, provide the complete file path to the user so they know where to access the document.
 
@@ -186,7 +194,11 @@ Once all four documents are complete and approved by the user:
    - Offer Brief: `[file_path]`
    - Necessary Beliefs: `[file_path]`
 
-2. **Transfer to BrandAgent** using the transfer tool. Your work is complete - BrandAgent will use your foundational documents to create the ad script and storyboard.
+2. **CRITICAL: Communicate the product name** - When transferring to BrandAgent, explicitly state:
+   - **Product Name:** `[product_name_you_used]` (e.g., "Green_Tea_Extract", "Acme_Widget_Pro")
+   - Instruct BrandAgent to use this EXACT product name for all subsequent work to maintain folder structure consistency
+   
+3. **Transfer to BrandAgent** using the transfer tool. Then immediately proceed working according to your instructions.
 
 **Do not create scripts or storyboards yourself** - that is BrandAgent's responsibility.
 

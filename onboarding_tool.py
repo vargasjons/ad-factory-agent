@@ -78,23 +78,7 @@ class OnboardingTool(BaseTool):
         json_schema_extra={"ui:placeholder": "e.g., #FF5733, #3498DB"},
     )
 
-    # 6. Model Selection
-    strategy_agent_model: Literal["gpt-5.1", "gpt-5-mini", "gpt-4.1"] = Field(
-        "gpt-5.1",
-        description="AI model for StrategyAgent (creates foundational documents)"
-    )
-    
-    brand_agent_model: Literal["gpt-5.1", "gpt-5-mini", "gpt-4.1"] = Field(
-        "gpt-5.1",
-        description="AI model for BrandAgent (creates scripts and storyboards)"
-    )
-    
-    ugc_agent_model: Literal["gpt-5.1", "gpt-5-mini", "gpt-4.1"] = Field(
-        "gpt-5.1",
-        description="AI model for UGCAgent (generates videos and images)"
-    )
-
-    # 7. Reasoning Effort
+    # 6. Reasoning Effort
     strategy_agent_reasoning: Literal["low", "medium", "high"] = Field(
         "high",
         description="Reasoning effort for StrategyAgent (recommend 'high' for thorough research)"
@@ -108,6 +92,17 @@ class OnboardingTool(BaseTool):
     ugc_agent_reasoning: Literal["low", "medium", "high"] = Field(
         "medium",
         description="Reasoning effort for UGCAgent (recommend 'medium' for quality video generation)"
+    )
+
+    # 7. Video Generation Model
+    video_generation_model: Literal[
+        "sora-2", 
+        "sora-2-pro",
+        "veo-3.1-generate-preview",
+        "veo-3.1-fast-generate-preview"
+    ] = Field(
+        "sora-2",
+        description="Video generation model to use (Sora for OpenAI, Veo 3.1 for Google Gemini)"
     )
 
     # 8. Output Format Preferences
@@ -163,12 +158,10 @@ if __name__ == "__main__":
         secondary_goals="Build trust and credibility, establish unique positioning in the market, create scalable ad production system",
         visual_style_preferences="Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
         brand_colors=None,
-        strategy_agent_model="gpt-5.1",
-        brand_agent_model="gpt-5.1",
-        ugc_agent_model="gpt-5.1",
         strategy_agent_reasoning="high",
         brand_agent_reasoning="medium",
         ugc_agent_reasoning="medium",
+        video_generation_model="sora-2",
         script_format_preferences="Natural conversational flow, one sentence per line for easy readability, direct-to-camera style suitable for UGC videos",
     )
     print(tool.run())

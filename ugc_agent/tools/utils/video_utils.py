@@ -21,12 +21,39 @@ load_dotenv()
 
 SORA_MODEL = "sora-2"
 
-# Use container path in production, local path for development
+# Model type detection
+def is_veo_model(model: str) -> bool:
+    """Check if the model is a Veo model (Google Gemini)"""
+    return model.startswith("veo-")
+
+def is_sora_model(model: str) -> bool:
+    """Check if the model is a Sora model (OpenAI)"""
+    return model.startswith("sora-")
+
+# Base MNT directory
 if os.path.exists("/app"):
-    VIDEO_DIR = "/app/mnt/generated_videos"
+    MNT_DIR = Path("/app/mnt")
 else:
     # Local development - use path relative to project root
-    VIDEO_DIR = str(Path(__file__).parent.parent.parent.parent / "mnt" / "generated_videos")
+    MNT_DIR = Path(__file__).parent.parent.parent.parent / "mnt"
+
+# Legacy path for backward compatibility (deprecated)
+VIDEO_DIR = str(MNT_DIR / "generated_videos")
+
+
+def get_videos_dir(product_name: str) -> str:
+    """
+    Get the videos directory for a specific product.
+    
+    Args:
+        product_name: Name of the product (sanitized folder name)
+        
+    Returns:
+        Path to product's generated_videos directory
+    """
+    videos_dir = MNT_DIR / product_name / "generated_videos"
+    videos_dir.mkdir(parents=True, exist_ok=True)
+    return str(videos_dir)
 
 def get_openai_client() -> OpenAI:
     """Instantiate an OpenAI client using the API key from the environment."""
@@ -37,6 +64,24 @@ def get_openai_client() -> OpenAI:
             "OPENAI_API_KEY environment variable is required for video operations"
         )
     return OpenAI(api_key=api_key)
+
+
+def get_gemini_client():
+    """Instantiate a Google Gemini client using the API key from the environment."""
+    try:
+        from google import genai
+    except ImportError:
+        raise RuntimeError(
+            "google-genai package is required for Veo video generation. "
+            "Install it with: pip install google-genai"
+        )
+    
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "GOOGLE_API_KEY environment variable is required for Veo video operations"
+        )
+    return genai.Client(api_key=api_key)
 
 
 def parse_video_size(size: str) -> tuple[int, int]:
@@ -91,7 +136,7 @@ def resize_image_to_dimensions(image: Image.Image, width: int, height: int) -> I
     return image.resize((width, height), Image.Resampling.LANCZOS)
 
 
-def resolve_input_reference(reference: Optional[str], target_size: Optional[str] = None) -> Optional[io.BufferedReader]:
+def resolve_input_reference(reference: Optional[str], target_size: Optional[str] = None, product_name: Optional[str] = None) -> Optional[io.BufferedReader]:
     """
     Turn an image name, local path, or HTTPS URL into a binary file handle for the API.
     Optionally resizes the image to match target video dimensions.
@@ -99,6 +144,7 @@ def resolve_input_reference(reference: Optional[str], target_size: Optional[str]
     Args:
         reference: Image name (without extension), full path, or URL to the reference image
         target_size: Optional target size in WIDTHxHEIGHT format (e.g. '1280x720')
+        product_name: Product name for locating images in product-specific folders
     
     Returns:
         Binary file handle ready for API upload
@@ -129,26 +175,36 @@ def resolve_input_reference(reference: Optional[str], target_size: Optional[str]
             filename = path.name
         else:
             # Try as image name without extension in multiple directories
-            from ugc_agent.tools.utils.image_utils import load_image_by_name, IMAGES_DIR
+            from ugc_agent.tools.utils.image_utils import load_image_by_name, get_images_dir
             
             pil_image = None
             image_path = None
             
+            # Get product-specific directories
+            if product_name:
+                images_dir = get_images_dir(product_name)
+                videos_dir = get_videos_dir(product_name)
+            else:
+                # Fallback to legacy paths if no product_name provided
+                from ugc_agent.tools.utils.image_utils import IMAGES_DIR
+                images_dir = IMAGES_DIR
+                videos_dir = VIDEO_DIR
+            
             # Try in generated_images directory first
-            print(f"Looking for image '{reference}' in {IMAGES_DIR}...")
+            print(f"Looking for image '{reference}' in {images_dir}...")
             pil_image, image_path, load_error_images = load_image_by_name(
-                reference, IMAGES_DIR, [".png", ".jpg", ".jpeg", ".webp"]
+                reference, images_dir, [".png", ".jpg", ".jpeg", ".webp"]
             )
             
             # If not found, try in generated_videos directory (for thumbnails/spritesheets)
             if load_error_images:
-                print(f"Not found in {IMAGES_DIR}, trying {VIDEO_DIR}...")
+                print(f"Not found in {images_dir}, trying {videos_dir}...")
                 pil_image, image_path, load_error_videos = load_image_by_name(
-                    reference, VIDEO_DIR, [".png", ".jpg", ".jpeg", ".webp"]
+                    reference, videos_dir, [".png", ".jpg", ".jpeg", ".webp"]
                 )
             
             if pil_image is None:
-                raise FileNotFoundError("Reference image not found.")
+                raise FileNotFoundError(f"Reference image '{reference}' not found in {images_dir} or {videos_dir}")
             
             print(f"Loaded image: {image_path}")
             
@@ -277,7 +333,138 @@ def extract_last_frame(video_path: str, output_path: str) -> Optional[Image.Imag
     return last_frame_image
 
 
-def save_video_with_metadata(client: OpenAI, video_id: str, name: str) -> list:
+def generate_spritesheet(video_path: str, output_path: str, frames_per_row: int = 6, num_rows: int = 1) -> Optional[Image.Image]:
+    """
+    Generate a linear spritesheet from a video file.
+    
+    Args:
+        video_path: Path to the video file
+        output_path: Path where the spritesheet should be saved
+        frames_per_row: Number of frames in the spritesheet (default 6, range 4-7)
+        num_rows: Number of rows (default 1 for linear layout)
+    
+    Returns:
+        PIL Image object of the spritesheet, or None if generation failed
+    """
+    print("Generating spritesheet from video...")
+    cap = cv2.VideoCapture(video_path)
+    
+    # Get total frame count
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    # Calculate frames to extract (evenly distributed)
+    total_frames_needed = frames_per_row * num_rows
+    frame_indices = [int(i * total_frames / total_frames_needed) for i in range(total_frames_needed)]
+    
+    # Extract frames
+    frames = []
+    for frame_idx in frame_indices:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, frame_idx)
+        ret, frame = cap.read()
+        if ret:
+            # Convert BGR to RGB
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frames.append(Image.fromarray(frame_rgb))
+    
+    cap.release()
+    
+    if not frames:
+        return None
+    
+    # Calculate thumbnail size (smaller for spritesheet)
+    thumb_width = frame_width // 4
+    thumb_height = frame_height // 4
+    
+    # Create spritesheet
+    spritesheet_width = thumb_width * frames_per_row
+    spritesheet_height = thumb_height * num_rows
+    spritesheet = Image.new('RGB', (spritesheet_width, spritesheet_height))
+    
+    # Paste frames into spritesheet
+    for idx, frame in enumerate(frames):
+        row = idx // frames_per_row
+        col = idx % frames_per_row
+        x = col * thumb_width
+        y = row * thumb_height
+        
+        # Resize frame to thumbnail size
+        frame_thumb = frame.resize((thumb_width, thumb_height), Image.Resampling.LANCZOS)
+        spritesheet.paste(frame_thumb, (x, y))
+    
+    # Save spritesheet
+    spritesheet.save(output_path, quality=85)
+    print(f"Spritesheet saved to {output_path}")
+    
+    return spritesheet
+
+
+def download_veo_video(gemini_client, video_file, output_path: str) -> None:
+    """
+    Download a Veo video from Google Gemini API.
+    
+    Args:
+        gemini_client: Google Gemini client instance
+        video_file: Video file object from Gemini API
+        output_path: Full path where the video should be saved
+    """
+    print(f"Downloading Veo video to {output_path}...")
+    gemini_client.files.download(file=video_file)
+    video_file.save(output_path)
+
+
+def save_veo_video_with_metadata(gemini_client, video_file, name: str, product_name: str) -> list:
+    """
+    Download and save Veo video with metadata (spritesheet, thumbnail, last frame).
+    
+    Args:
+        gemini_client: Google Gemini client instance
+        video_file: Video file object from Gemini API
+        name: Base name for saved files (without extension)
+        product_name: Name of the product (for organizing files in product-specific folders)
+    
+    Returns:
+        List of ToolOutput objects showing the saved files
+    """
+    output = []
+    videos_dir = get_videos_dir(product_name)
+    
+    # Step 1: Download and save the actual video
+    video_path = os.path.join(videos_dir, f"{name}.mp4")
+    download_veo_video(gemini_client, video_file, video_path)
+    
+    # Step 2: Generate and save spritesheet
+    spritesheet_path = os.path.join(videos_dir, f"{name}_spritesheet.jpg")
+    spritesheet = generate_spritesheet(video_path, spritesheet_path)
+    if spritesheet:
+        output.extend(create_image_output(spritesheet_path, f"{name}_spritesheet.jpg"))
+    
+    # Step 3: Extract and save thumbnail (first frame)
+    thumbnail_path = os.path.join(videos_dir, f"{name}_thumbnail.jpg")
+    cap = cv2.VideoCapture(video_path)
+    ret, frame = cap.read()
+    if ret:
+        frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        thumbnail_image = Image.fromarray(frame_rgb)
+        thumbnail_image.save(thumbnail_path)
+        output.extend(create_image_output(thumbnail_path, f"{name}_thumbnail.jpg"))
+    cap.release()
+    
+    # Step 4: Extract and save the last frame
+    last_frame_path = os.path.join(videos_dir, f"{name}_last_frame.jpg")
+    last_frame_image = extract_last_frame(video_path, last_frame_path)
+    
+    if last_frame_image:
+        output.extend(create_image_output(last_frame_path, f"{name}_last_frame.jpg"))
+    
+    # Step 5: Add final summary message with full path
+    output.append(ToolOutputText(type="text", text=f"Video saved to `{name}.mp4`\nPath: {video_path}"))
+    
+    return output
+
+
+def save_video_with_metadata(client: OpenAI, video_id: str, name: str, product_name: str) -> list:
     """
     Download and save video with all metadata (spritesheet, thumbnail, last frame).
     
@@ -285,29 +472,30 @@ def save_video_with_metadata(client: OpenAI, video_id: str, name: str) -> list:
         client: OpenAI client instance
         video_id: The video ID from Sora API
         name: Base name for saved files (without extension)
+        product_name: Name of the product (for organizing files in product-specific folders)
     
     Returns:
         List of ToolOutput objects showing the saved files
     """
     output = []
-    os.makedirs(VIDEO_DIR, exist_ok=True)
+    videos_dir = get_videos_dir(product_name)
     
     # Step 1: Download and save spritesheet
-    spritesheet_path = os.path.join(VIDEO_DIR, f"{name}_spritesheet.jpg")
+    spritesheet_path = os.path.join(videos_dir, f"{name}_spritesheet.jpg")
     download_video_variant(client, video_id, "spritesheet", spritesheet_path)
     output.extend(create_image_output(spritesheet_path, f"{name}_spritesheet.jpg"))
     
     # Step 2: Download and save thumbnail
-    thumbnail_path = os.path.join(VIDEO_DIR, f"{name}_thumbnail.jpg")
+    thumbnail_path = os.path.join(videos_dir, f"{name}_thumbnail.jpg")
     download_video_variant(client, video_id, "thumbnail", thumbnail_path)
     output.extend(create_image_output(thumbnail_path, f"{name}_thumbnail.jpg"))
     
     # Step 3: Download and save the actual video
-    video_path = os.path.join(VIDEO_DIR, f"{name}.mp4")
+    video_path = os.path.join(videos_dir, f"{name}.mp4")
     download_video_variant(client, video_id, "video", video_path)
     
     # Step 4: Extract and save the last frame
-    last_frame_path = os.path.join(VIDEO_DIR, f"{name}_last_frame.jpg")
+    last_frame_path = os.path.join(videos_dir, f"{name}_last_frame.jpg")
     last_frame_image = extract_last_frame(video_path, last_frame_path)
     
     if last_frame_image:

@@ -7,7 +7,7 @@ from openai.types.shared.reasoning import Reasoning
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-def create_brand_agent(model:str = "gpt-5-mini", reasoning_effort: str = "medium") -> Agent:
+def create_brand_agent(model: str = "gpt-5.1", reasoning_effort: str = "medium") -> Agent:
     """Factory that returns a fresh BrandAgent instance.
     Use this in tests to avoid reusing a singleton across multiple agencies.
     """

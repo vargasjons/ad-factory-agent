@@ -12,7 +12,7 @@ import numpy as np
 from openai import OpenAI
 from dotenv import load_dotenv
 
-from ugc_agent.tools.utils.video_utils import VIDEO_DIR
+from ugc_agent.tools.utils.video_utils import get_videos_dir
 
 load_dotenv()
 
@@ -22,8 +22,14 @@ class AddSubtitles(BaseTool):
     Add animated subtitles to a video.
     Uses OpenAI Whisper API to automatically transcribe audio and extract word-level timestamps.
     Subtitles appear word-by-word or phrase-by-phrase with highlighting effect.
+    
+    Videos are saved to: mnt/{product_name}/generated_videos/
     """
 
+    product_name: str = Field(
+        ...,
+        description="Name of the product this video is for (e.g., 'Acme_Widget_Pro', 'Green_Tea_Extract'). Used to organize files into product-specific folders.",
+    )
     video_name: str = Field(
         ...,
         description="Name of the video file (without extension) to add subtitles to",
@@ -77,12 +83,13 @@ class AddSubtitles(BaseTool):
         """Add animated subtitles to the video using Whisper for timing."""
         print(f"Adding subtitles to video: {self.video_name}")
 
-        video_path = os.path.join(VIDEO_DIR, f"{self.video_name}.mp4")
+        videos_dir = get_videos_dir(self.product_name)
+        video_path = os.path.join(videos_dir, f"{self.video_name}.mp4")
 
         if not os.path.exists(video_path):
             raise FileNotFoundError(
                 f"Video file not found: {video_path}. "
-                f"Make sure the video exists in the {VIDEO_DIR} directory."
+                f"Make sure the video exists in the {videos_dir} directory."
             )
 
         print(f"Loading video: {video_path}")
@@ -384,7 +391,7 @@ class AddSubtitles(BaseTool):
         else:
             output_name = f"{self.video_name}_subtitled"
 
-        output_path = os.path.join(VIDEO_DIR, f"{output_name}.mp4")
+        output_path = os.path.join(videos_dir, f"{output_name}.mp4")
 
         print(f"Writing video with subtitles to: {output_path}")
         try:
@@ -428,6 +435,7 @@ class AddSubtitles(BaseTool):
 if __name__ == "__main__":
     # Test case
     tool = AddSubtitles(
+        product_name="Test_Product",
         video_name="herbaluxe_ad_v3",
         original_script="Does your moisturizer still smell like perfume? Mine did, and my skin hated it. So I switched to HerbaLuxe—an aloe‑first daily moisturizer made with organic ingredients. It's fragrance‑free, with no essential oils and a minimal formula. First swipe feels cool and soothing. Sinks in fast—no stickiness. Layers clean under sunscreen. Skin feels calm, not coated. herbaluxe-cosmetics.com",
         words_per_clip=4,

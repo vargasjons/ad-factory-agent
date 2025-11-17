@@ -37,14 +37,17 @@ cp .env.example .env
 Then edit `.env` with your actual API keys:
 
 ```bash
-# Required: OpenAI API Key
+# Required: OpenAI API Key (for Sora video models and GPT agents)
 OPENAI_API_KEY=sk-your-actual-key-here
 
-# Required: Google AI API Key
+# Required if using Veo: Google API Key
+# Only needed if you select a Veo video generation model during onboarding
 GOOGLE_API_KEY=your-actual-key-here
 ```
 
-See `ENV_VARIABLES.md` for detailed information about each API key.
+**Note**: The video generation model is selected during onboarding. Choose between:
+- **Sora models** (OpenAI): Requires `OPENAI_API_KEY`
+- **Veo models** (Google Gemini): Requires `GOOGLE_API_KEY`
 
 ### 4. Test the Example Agency
 
@@ -82,9 +85,11 @@ python agency.py
 - **Product Category**: Type of products/services
 - **Business Goals**: Primary and secondary objectives
 - **Brand Guidelines**: Visual style, colors
-- **AI Models**: Choose models for each agent
-- **Reasoning Effort**: Configure reasoning levels (low, medium, high)
+- **Video Generation Model**: Select between Sora (OpenAI) or Veo (Google Gemini) models
+- **Reasoning Effort**: Configure reasoning levels for each agent (low, medium, high)
 - **Output Preferences**: Script format preferences
+
+**Note**: All agents use GPT-5.1 model for optimal performance.
 
 ### Learn More
 

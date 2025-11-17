@@ -9,7 +9,7 @@ from pydantic import Field, field_validator
 from agency_swarm import BaseTool
 
 from ugc_agent.tools.utils.image_utils import (
-    IMAGES_DIR,
+    get_images_dir,
     MODEL_NAME,
     load_image_by_name,
     extract_image_from_response,
@@ -22,8 +22,15 @@ from ugc_agent.tools.utils.image_utils import (
 
 
 class EditImage(BaseTool):
-    """Edit existing images using Google's Gemini 2.5 Flash Image (Nano Banana) model."""
+    """Edit existing images using Google's Gemini 2.5 Flash Image (Nano Banana) model.
+    
+    Images are saved to: mnt/{product_name}/generated_images/
+    """
 
+    product_name: str = Field(
+        ...,
+        description="Name of the product this image is for (e.g., 'Acme_Widget_Pro', 'Green_Tea_Extract'). Used to organize files into product-specific folders.",
+    )
     input_image_name: str = Field(
         ...,
         description="Name of the existing image file to edit (without extension).",
@@ -87,14 +94,14 @@ class EditImage(BaseTool):
         # Step 2: Initialize the Google AI client
         client = genai.Client(api_key=api_key)
 
-        # Step 3: Load input image
-        image, image_path, load_error = load_image_by_name(self.input_image_name, IMAGES_DIR)
+        # Step 3: Get product-specific images directory
+        images_dir = get_images_dir(self.product_name)
+        
+        # Step 4: Load input image
+        image, image_path, load_error = load_image_by_name(self.input_image_name, images_dir)
         if load_error:
             raise FileNotFoundError(load_error)
         print(f"Loaded image: {image_path}")
-
-        # Step 4: Create output directory if it doesn't exist
-        os.makedirs(IMAGES_DIR, exist_ok=True)
 
         def edit_single_variant(variant_num: int):
             """Generate a single edited image variant"""
@@ -132,6 +139,7 @@ class EditImage(BaseTool):
                     self.output_image_name,
                     self.num_variants,
                     compress_image_for_base64,
+                    images_dir,
                 )
             except Exception as e:
                 print(f"Error generating variant {variant_num}: {str(e)}")
@@ -153,6 +161,7 @@ class EditImage(BaseTool):
 if __name__ == "__main__":
     # Example usage with Google Gemini 2.5 Flash Image
     tool = EditImage(
+        product_name="Test_Product",
         input_image_name="logo_image_variant_1",
         edit_prompt="Change the logo color from red to blue",
         output_image_name="logo_image_edited",

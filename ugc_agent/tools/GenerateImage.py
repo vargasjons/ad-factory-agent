@@ -9,7 +9,7 @@ from pydantic import Field, field_validator
 from agency_swarm import BaseTool
 
 from ugc_agent.tools.utils.image_utils import (
-    IMAGES_DIR,
+    get_images_dir,
     MODEL_NAME,
     extract_image_from_response,
     process_variant_result,
@@ -25,8 +25,15 @@ load_dotenv()
 
 
 class GenerateImage(BaseTool):
-    """Generate images using Google's Gemini 2.5 Flash Image (Nano Banana) model."""
+    """Generate images using Google's Gemini 2.5 Flash Image (Nano Banana) model.
+    
+    Images are saved to: mnt/{product_name}/generated_images/
+    """
 
+    product_name: str = Field(
+        ...,
+        description="Name of the product this image is for (e.g., 'Acme_Widget_Pro', 'Green_Tea_Extract'). Used to organize files into product-specific folders.",
+    )
     prompt: str = Field(
         ...,
         description=(
@@ -82,8 +89,8 @@ class GenerateImage(BaseTool):
         # Step 2: Initialize the Google AI client
         client = genai.Client(api_key=api_key)
 
-        # Step 3: Create output directory if it doesn't exist
-        os.makedirs(IMAGES_DIR, exist_ok=True)
+        # Step 3: Get product-specific images directory
+        images_dir = get_images_dir(self.product_name)
 
         def generate_single_variant(variant_num: int):
             """Generate a single image variant"""
@@ -118,6 +125,7 @@ class GenerateImage(BaseTool):
                     self.file_name,
                     self.num_variants,
                     compress_image_for_base64,
+                    images_dir,
                 )
             except Exception as e:
                 print(f"Error generating variant {variant_num}: {str(e)}")
@@ -139,6 +147,7 @@ class GenerateImage(BaseTool):
 if __name__ == "__main__":
     # Example usage with Google Gemini 2.5 Flash Image
     tool = GenerateImage(
+        product_name="Test_Product",
         prompt=(
             "Generate an image of a clean, modern black laptop computer that is placed closed on a white marble "
             "surface with soft natural lighting, professional product photography style, shallow depth of field, "

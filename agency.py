@@ -50,16 +50,17 @@ def render_shared_instructions():
 # do not remove this method, it is used in the main.py file to deploy the agency (it has to be a method)
 def create_agency(load_threads_callback=None):
     # Create agents with config values inside the function
+    # All agents use gpt-5.1 model for optimal performance
     strategy_agent = create_strategy_agent(
-        model=config.get("strategy_agent_model", "gpt-5.1"),
+        model="gpt-5.1",
         reasoning_effort=config.get("strategy_agent_reasoning", "high")
     )
     brand_agent = create_brand_agent(
-        model=config.get("brand_agent_model", "gpt-5.1"),
+        model="gpt-5.1",
         reasoning_effort=config.get("brand_agent_reasoning", "medium")
     )
     ugc_agent = create_ugc_agent(
-        model=config.get("ugc_agent_model", "gpt-5.1"),
+        model="gpt-5.1",
         reasoning_effort=config.get("ugc_agent_reasoning", "medium")
     )
     

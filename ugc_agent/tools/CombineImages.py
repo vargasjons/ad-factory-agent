@@ -11,7 +11,7 @@ from pydantic import Field, field_validator
 from agency_swarm import BaseTool
 
 from ugc_agent.tools.utils.image_utils import (
-    IMAGES_DIR,
+    get_images_dir,
     MODEL_NAME,
     load_image_by_name,
     extract_image_parts_from_response,
@@ -24,8 +24,15 @@ from ugc_agent.tools.utils.image_utils import (
 
 
 class CombineImages(BaseTool):
-    """Combine multiple images using Google's Gemini 2.5 Flash Image (Nano Banana) model."""
+    """Combine multiple images using Google's Gemini 2.5 Flash Image (Nano Banana) model.
+    
+    Images are saved to: mnt/{product_name}/generated_images/
+    """
 
+    product_name: str = Field(
+        ...,
+        description="Name of the product these images are for (e.g., 'Acme_Widget_Pro', 'Green_Tea_Extract'). Used to organize files into product-specific folders.",
+    )
     image_names: list[str] = Field(
         ...,
         description="List of image file names (without extension) to combine.",
@@ -94,19 +101,19 @@ class CombineImages(BaseTool):
         # Step 2: Initialize the Google AI client
         client = genai.Client(api_key=api_key)
 
-        # Step 3: Load images using image names
+        # Step 3: Get product-specific images directory
+        images_dir = get_images_dir(self.product_name)
+        
+        # Step 4: Load images using image names
         images = []
         for image_name in self.image_names:
             image, image_path, load_error = load_image_by_name(
-                image_name, IMAGES_DIR, [".png", ".jpg", ".jpeg"]
+                image_name, images_dir, [".png", ".jpg", ".jpeg"]
             )
             if load_error:
                 raise FileNotFoundError(load_error)
             images.append(image)
             print(f"Loaded image: {image_path}")
-
-        # Step 4: Create output directory if it doesn't exist
-        os.makedirs(IMAGES_DIR, exist_ok=True)
 
         def combine_single_variant(variant_num: int):
             """Generate a single combined image variant"""
@@ -144,6 +151,7 @@ class CombineImages(BaseTool):
                     self.file_name,
                     self.num_variants,
                     compress_image_for_base64,
+                    images_dir,
                 )
             except Exception as e:
                 print(f"Error generating variant {variant_num}: {str(e)}")
@@ -165,6 +173,7 @@ class CombineImages(BaseTool):
 if __name__ == "__main__":
     # Example usage with Google Gemini 2.5 Flash Image
     tool = CombineImages(
+        product_name="Test_Product",
         image_names=["laptop_image_variant_2", "logo_image_variant_2"],
         text_instruction=(
             "Take the first image of a laptop on a table. Add the logo from the second image into the middle "

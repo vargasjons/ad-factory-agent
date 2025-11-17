@@ -9,14 +9,32 @@ from agents.tool import ToolOutputImage, ToolOutputText
 # Constants
 MODEL_NAME = "gemini-2.5-flash-image-preview"
 
-# Use container path in production, local path for development
+# Base MNT directory
 if os.path.exists("/app"):
-    IMAGES_DIR = "/app/mnt/generated_images"
+    MNT_DIR = Path("/app/mnt")
 else:
     # Local development - use path relative to project root
-    IMAGES_DIR = str(Path(__file__).parent.parent.parent.parent / "mnt" / "generated_images")
+    MNT_DIR = Path(__file__).parent.parent.parent.parent / "mnt"
+
+# Legacy path for backward compatibility (deprecated)
+IMAGES_DIR = str(MNT_DIR / "generated_images")
 
 OUTPUT_FORMAT = "png"
+
+
+def get_images_dir(product_name: str) -> str:
+    """
+    Get the images directory for a specific product.
+    
+    Args:
+        product_name: Name of the product (sanitized folder name)
+        
+    Returns:
+        Path to product's generated_images directory
+    """
+    images_dir = MNT_DIR / product_name / "generated_images"
+    images_dir.mkdir(parents=True, exist_ok=True)
+    return str(images_dir)
 
 
 def validate_num_variants(num_variants):
@@ -85,11 +103,14 @@ def extract_image_parts_from_response(response):
     return image_parts
 
 
-def process_variant_result(variant_num, image, file_name, num_variants, compress_func):
+def process_variant_result(variant_num, image, file_name, num_variants, compress_func, images_dir=None):
     """Process a single variant result - save image and create result dict"""
+    # Use provided images_dir or fall back to legacy IMAGES_DIR
+    save_dir = images_dir if images_dir is not None else IMAGES_DIR
+    
     # Create filename for this variant
     image_name, filename = create_filename(file_name, variant_num, num_variants, OUTPUT_FORMAT)
-    filepath = os.path.join(IMAGES_DIR, filename)
+    filepath = os.path.join(save_dir, filename)
     
     # Save the image
     image.save(filepath, OUTPUT_FORMAT)

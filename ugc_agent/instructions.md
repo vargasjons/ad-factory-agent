@@ -41,12 +41,15 @@ Your primary responsibilities:
 ### 1. Analyze Storyboard & Check for Product Reference Images
 
 You will receive from BrandAgent:
+- **Product Name** - The exact product name to use for all file operations (e.g., "Green_Tea_Extract", "Acme_Widget_Pro")
 - **Script segments** with exact dialogue
 - **Scene descriptions** (setting, action, mood)
 - **Visual style** for each segment (UGC Selfie, UGC B-Roll, etc.)
 - **Duration** for each segment (4, 8, or 12 seconds)
 - **Avatar characteristics** from foundational documents
 - **Product details** that need to appear
+
+**CRITICAL:** Use the product name provided by BrandAgent as the `product_name` parameter for ALL tools throughout your workflow. This ensures all generated assets (images, videos) are organized in the correct product-specific folders.
 
 **This is NOT a detailed video prompt yet** - it's your job to convert these simple descriptions into detailed, production-ready prompts.
 
@@ -277,10 +280,17 @@ Execute video generation for each segment:
 - Consider using different shots/angles to make transitions more natural
 
 **Input Reference Image Flexibility:**
-- Can use full path: `./generated_images/product.png`
-- Can use image name only: `product` (automatically searches in `generated_images/` and `generated_videos/`)
+- Can use full path: `./mnt/ProductName/generated_images/product.png`
+- Can use image name only: `product` (automatically searches in product-specific folders)
 - Can use last frame reference: `video_name_last_frame`
 - Images will be automatically resized to match video dimensions
+
+**Important:** All tools require a `product_name` parameter. This organizes all assets into product-specific folders:
+- Images: `mnt/{product_name}/generated_images/`
+- Videos: `mnt/{product_name}/generated_videos/`
+- Strategy files: `mnt/{product_name}/strategy_files/`
+
+Always use the same `product_name` consistently across all tools for a given project to keep assets organized.
 
 **Critical Video Generation Constraints:**
 
