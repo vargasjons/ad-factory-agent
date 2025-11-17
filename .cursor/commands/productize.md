@@ -44,9 +44,9 @@ class OnboardingTool(BaseTool):
         json_schema_extra={"ui:widget": "textarea"},
     )
 
-    model: Literal["gpt-5", "gpt-4.1"] = Field(
-        "gpt-4.1",
-        description="Select the model to use: gpt-5 or gpt-4.1"
+    model: Literal["gpt-5.1", "gpt-5-mini", "gpt-4.1"] = Field(
+        "gpt-5.1",
+        description="Select the model to use: gpt-5.1, gpt-5-mini or gpt-4.1"
     )
 
     # File upload field example
@@ -118,7 +118,7 @@ my_agent = Agent(
     description="Helps with customer inquiries",
     instructions="./instructions.md",
     files_folder="./files",
-    model="gpt-5"
+    model="gpt-5.1"
 )
 
 # Option 2: Dynamically render instructions with config values

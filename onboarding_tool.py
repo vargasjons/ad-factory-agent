@@ -79,18 +79,18 @@ class OnboardingTool(BaseTool):
     )
 
     # 6. Model Selection
-    strategy_agent_model: Literal["gpt-5", "gpt-4.1"] = Field(
-        "gpt-5",
+    strategy_agent_model: Literal["gpt-5.1", "gpt-5-mini", "gpt-4.1"] = Field(
+        "gpt-5.1",
         description="AI model for StrategyAgent (creates foundational documents)"
     )
     
-    brand_agent_model: Literal["gpt-5", "gpt-4.1"] = Field(
-        "gpt-5",
+    brand_agent_model: Literal["gpt-5.1", "gpt-5-mini", "gpt-4.1"] = Field(
+        "gpt-5.1",
         description="AI model for BrandAgent (creates scripts and storyboards)"
     )
     
-    ugc_agent_model: Literal["gpt-5", "gpt-4.1"] = Field(
-        "gpt-5",
+    ugc_agent_model: Literal["gpt-5.1", "gpt-5-mini", "gpt-4.1"] = Field(
+        "gpt-5.1",
         description="AI model for UGCAgent (generates videos and images)"
     )
 
@@ -163,9 +163,9 @@ if __name__ == "__main__":
         secondary_goals="Build trust and credibility, establish unique positioning in the market, create scalable ad production system",
         visual_style_preferences="Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
         brand_colors=None,
-        strategy_agent_model="gpt-5",
-        brand_agent_model="gpt-5",
-        ugc_agent_model="gpt-5",
+        strategy_agent_model="gpt-5.1",
+        brand_agent_model="gpt-5.1",
+        ugc_agent_model="gpt-5.1",
         strategy_agent_reasoning="high",
         brand_agent_reasoning="medium",
         ugc_agent_reasoning="medium",

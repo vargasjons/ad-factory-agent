@@ -4,7 +4,7 @@ from openai.types.shared.reasoning import Reasoning
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-def create_strategy_agent(model: str = "gpt-5", reasoning_effort: str = "high") -> Agent:
+def create_strategy_agent(model: str = "gpt-5.1", reasoning_effort: str = "high") -> Agent:
     """
     Creates the StrategyAgent - the entry point for the agency.
     

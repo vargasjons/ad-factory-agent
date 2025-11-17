@@ -51,15 +51,15 @@ def render_shared_instructions():
 def create_agency(load_threads_callback=None):
     # Create agents with config values inside the function
     strategy_agent = create_strategy_agent(
-        model=config.get("strategy_agent_model", "gpt-5"),
+        model=config.get("strategy_agent_model", "gpt-5.1"),
         reasoning_effort=config.get("strategy_agent_reasoning", "high")
     )
     brand_agent = create_brand_agent(
-        model=config.get("brand_agent_model", "gpt-5"),
+        model=config.get("brand_agent_model", "gpt-5.1"),
         reasoning_effort=config.get("brand_agent_reasoning", "medium")
     )
     ugc_agent = create_ugc_agent(
-        model=config.get("ugc_agent_model", "gpt-5"),
+        model=config.get("ugc_agent_model", "gpt-5.1"),
         reasoning_effort=config.get("ugc_agent_reasoning", "medium")
     )
     

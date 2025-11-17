@@ -109,7 +109,7 @@ agent = Agent(
     description="Agent description",
     instructions="./instructions.md",
     tools=[hosted_mcp],  # Add to tools list
-    model="gpt-5"
+    model="gpt-5.1"
 )
 ```
 
@@ -143,7 +143,7 @@ agent = Agent(
     description="Agent description",
     instructions="./instructions.md",
     mcp_servers=[sse_server],  # Add to mcp_servers list
-    model="gpt-5"
+    model="gpt-5.1"
 )
 ```
 
@@ -174,7 +174,7 @@ agent = Agent(
     description="Agent description",
     instructions="./instructions.md",
     mcp_servers=[http_server],  # Add to mcp_servers list
-    model="gpt-5"
+    model="gpt-5.1"
 )
 ```
 
@@ -225,7 +225,7 @@ agent = Agent(
     description="Agent description",
     instructions="./instructions.md",
     mcp_servers=[stdio_server],  # Add to mcp_servers list
-    model="gpt-5"
+    model="gpt-5.1"
 )
 ```
 

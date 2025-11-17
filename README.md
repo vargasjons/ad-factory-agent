@@ -82,7 +82,7 @@ python agency.py
 - **Product Category**: Type of products/services
 - **Business Goals**: Primary and secondary objectives
 - **Brand Guidelines**: Visual style, colors
-- **AI Models**: Choose models for each agent (gpt-5, gpt-4.1)
+- **AI Models**: Choose models for each agent
 - **Reasoning Effort**: Configure reasoning levels (low, medium, high)
 - **Output Preferences**: Script format preferences
 
