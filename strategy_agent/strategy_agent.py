@@ -17,7 +17,6 @@ def create_strategy_agent(model: str = "gpt-5.1", reasoning_effort: str = "mediu
         instructions="instructions.md",
         model=model,
         tools_folder="./tools",
-        files_folder="./files",
         tools=[WebSearchTool()],
         model_settings=ModelSettings(
             reasoning=Reasoning(summary="auto", effort=reasoning_effort), 
