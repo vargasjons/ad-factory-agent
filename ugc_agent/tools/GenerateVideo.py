@@ -25,7 +25,10 @@ from ugc_agent.tools.utils.video_utils import (
 class GenerateVideo(BaseTool):
     """
     Generates a video using either OpenAI's Sora or Google's Veo model.
-    Supports Sora models (sora-2, sora-2-pro) and Veo models (veo-3.1, veo-3.0 variants).
+
+    Tool is stateless, and does not maintain any charahcters / scenes / etc between calls.
+
+    **Important**: Sora 2 and Sora 2 Pro do not support reference images with faces.
     
     Videos are saved to: mnt/{product_name}/generated_videos/
     """

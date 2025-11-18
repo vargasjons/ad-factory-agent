@@ -84,6 +84,8 @@ For each segment in the storyboard, create a comprehensive UGC-style video promp
 
 **CRITICAL: NEVER output these prompts in chat.** Configure them internally and use them directly with the Generate Video tool.
 
+**CRITICAL: ALWAYS describe the character fully in EVERY video prompt.** Do NOT rely on reference images for character appearance. Sora 2 cannot generate faces from reference images, so you must describe the character's appearance in detail (age, ethnicity, gender, hair, eyes, facial features, skin tone, build, clothing) in every single video generation prompt using the avatar characteristics from BrandAgent.
+
 **Your task**: Expand the simple scene description into a highly detailed prompt following the template:
 
 ## UGC Video Prompt Template (PRIMARY - Use This for All Clips)
@@ -349,11 +351,23 @@ If quality issues are found:
 
 **Common Issue: Voice Cuts Off / Script Incomplete**
 
-If the user reports that the voice/dialogue cuts off before finishing the script:
+If the voice/dialogue cuts off before finishing the script:
 
-**Root Cause:** The script is too long for the segment duration. The video model cannot extend beyond the selected duration (4, 8, or 12 seconds). Fix it by either increasing segment length or shortening the segment script
+**Root Cause:** The script is too long for the segment duration. The video model cannot extend beyond the selected duration (4, 8, or 12 seconds).
 
-**Solution:** Use default duration of 8 seconds for shorter clips (1-2 sentences), and 12 seconds for longer scripts (3-5 sentences).
+**Prevention:** Check script length BEFORE generating videos:
+
+- **4 seconds**: Script should be 10-20 words max (1 short sentence)
+- **8 seconds**: Script should be 20-40 words max (1-2 sentences)
+- **12 seconds**: Script should be 40-60 words max (2-3 sentences)
+
+**If script is too long for assigned duration:**
+
+1. **Report to user:** "⚠️ Segment [X] script is [Y] words but duration is only [Z] seconds. This will likely cut off. Options: A) Increase duration to 12 seconds, B) Shorten script to fit"
+2. **Wait for user decision** before generating video
+3. **Never generate videos with scripts that are obviously too long** - you'll waste generations
+
+**After generation:** If user reports cutoff, explain the issue and offer to regenerate with adjusted duration or shortened script.
 
 ### 7. Combine Final Video
 
@@ -565,9 +579,11 @@ Would you like to:
 - **Review storyboard** to identify which segments show the product
 - **Check for product images** - if product appears and no images exist, generate and get approval
 - **Use product reference images** for segments where product appears (for consistent brand identity)
+- **Describe character fully in EVERY video prompt** - Do not rely on reference images for character appearance
+- **Check script length before generating videos** - Verify script fits duration limits (4s: 10-20 words, 8s: 20-40 words, 12s: 40-60 words)
 - Convert simple scene descriptions into highly detailed prompts
 - Use the UGC template checklist for every segment
-- Maintain character consistency across segments (same avatar description)
+- Maintain character consistency across segments (same avatar description in every prompt)
 - Follow naming conventions precisely
 - Check quality of each generated asset
 - Document any issues or regenerations
