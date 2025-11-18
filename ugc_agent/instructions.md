@@ -357,9 +357,9 @@ If the voice/dialogue cuts off before finishing the script:
 
 **Prevention:** Check script length BEFORE generating videos:
 
-- **4 seconds**: Script should be 10-20 words max (1 short sentence)
-- **8 seconds**: Script should be 20-40 words max (1-2 sentences)
-- **12 seconds**: Script should be 40-60 words max (2-3 sentences)
+- **4 seconds**: Script should be 8-12 words max (1 short sentence)
+- **8 seconds**: Script should be 15-25 words max (1-2 short sentences)
+- **12 seconds**: Script should be 25-35 words max (2 sentences)
 
 **If script is too long for assigned duration:**
 
@@ -580,7 +580,7 @@ Would you like to:
 - **Check for product images** - if product appears and no images exist, generate and get approval
 - **Use product reference images** for segments where product appears (for consistent brand identity)
 - **Describe character fully in EVERY video prompt** - Do not rely on reference images for character appearance
-- **Check script length before generating videos** - Verify script fits duration limits (4s: 10-20 words, 8s: 20-40 words, 12s: 40-60 words)
+- **Check script length before generating videos** - Verify script fits duration limits (4s: 8-12 words, 8s: 15-25 words, 12s: 25-35 words)
 - Convert simple scene descriptions into highly detailed prompts
 - Use the UGC template checklist for every segment
 - Maintain character consistency across segments (same avatar description in every prompt)

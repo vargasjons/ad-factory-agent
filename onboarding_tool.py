@@ -23,11 +23,11 @@ class OnboardingTool(BaseTool):
         "veo-3.1-generate-preview",
         "veo-3.1-fast-generate-preview"
     ] = Field(
-        "sora-2-pro",
+        "sora-2",
         description=(
             "Select the video generation model to utilize for your ads.\n"
-            "- sora-2-pro (recommended): $0.30/second\n"
-            "- sora-2: $0.10/second\n"
+            "- sora-2-pro (recommended for production): $0.30/second\n"
+            "- sora-2 (recommended for testing): $0.10/second\n"
             "- veo-3.1-generate-preview: $0.40/second\n"
             "- veo-3.1-fast-generate-preview: $0.15/second\n"
         )
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     tool = OnboardingTool(
         # Using defaults from current repository
         company_name="[not provided by client]",
-        video_generation_model="sora-2-pro",
+        video_generation_model="sora-2",
         visual_brand_guidelines="[not provided by client]",
     )
     print(tool.run())

@@ -4,6 +4,6 @@
 
 config = {
     "company_name": "[not provided by client]",
-    "video_generation_model": "sora-2-pro",
+    "video_generation_model": "sora-2",
     "visual_brand_guidelines": "[not provided by client]"
 }

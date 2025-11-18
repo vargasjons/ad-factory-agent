@@ -164,25 +164,31 @@ Visual Style: [UGC Selfie / UGC B-Roll / UGC Product Demo]
 
 ### Script Length Limits (CRITICAL)
 
-**Scripts that are too long will cut off abruptly in videos.** Follow these strict limits:
+**Scripts that are too long will cut off abruptly in videos.** Follow these STRICT limits:
 
-- **4 seconds**: 10-20 words maximum (1 short sentence)
-- **8 seconds**: 20-40 words maximum (1-2 sentences)
-- **12 seconds**: 40-60 words maximum (2-3 sentences)
+- **4 seconds**: 8-12 words maximum (1 short sentence)
+- **8 seconds**: 15-25 words maximum (1-2 short sentences)
+- **12 seconds**: 25-35 words maximum (2 sentences + 1 short sentence)
 
-**Always count words in your script segments** and ensure they fit within these limits. If a script segment exceeds the limit, either:
+**Always count words in your script segments** and ensure they fit within these limits. Natural speaking pace with pauses requires shorter scripts than you think.
+
+**If a script segment exceeds the limit:**
 
 - Split it into multiple segments
-- Shorten the script
-- Increase the segment duration
+- Shorten the script significantly
+- Use multiple 12-second segments rather than cramming too much into one
 
-**Example of correct length:**
+**Examples of correct length:**
 
 ```
-✅ 8 seconds: "You know what's crazy? Everyone's trying to lose weight the same way that's been failing for decades." (17 words)
+✅ 8 seconds: "You know what's crazy? Everyone's trying the same failing approach." (11 words)
 
-❌ 8 seconds: "For the first seven days, we deploy one AI employee on a single, high-impact workflow in your agency, completely free. It might be client reporting, lead qualification, or support triage—whatever is currently draining the most hours." (38 words - TOO LONG, will cut off)
+✅ 12 seconds: "I tried every diet and workout plan. Nothing worked because they treat symptoms, not the cause." (16 words)
+
+❌ 12 seconds: "For the first seven days, we deploy one AI employee on a single, high-impact workflow in your agency, completely free. It might be client reporting, lead qualification, or support triage." (31 words - TOO LONG, will cut off)
 ```
+
+**Pro tip:** When in doubt, go shorter. It's better to have extra time than cut off mid-sentence.
 
 ### Segment Types - Mix for Engagement
 
