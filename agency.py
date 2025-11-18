@@ -41,7 +41,7 @@ def create_agency(load_threads_callback=None):
     ugc_agent = create_ugc_agent(model="gpt-5.1")
     
     agency = Agency(
-        strategy_agent,  # Single entry point - user always starts here
+        strategy_agent, brand_agent, ugc_agent,  # Single entry point - user always starts here
         communication_flows=[
             (strategy_agent > brand_agent > ugc_agent, SendMessageHandoff),  # Linear flow: Strategy → Script & Storyboard → Execution
         ],
