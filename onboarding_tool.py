@@ -70,7 +70,7 @@ if __name__ == "__main__":
     tool = OnboardingTool(
         # Using defaults from current repository
         company_name="[not provided by client]",
-        video_generation_model="sora-2",
+        video_generation_model="sora-2-pro",
         visual_brand_guidelines="[not provided by client]",
     )
     print(tool.run())
