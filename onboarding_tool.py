@@ -23,8 +23,14 @@ class OnboardingTool(BaseTool):
         "veo-3.1-generate-preview",
         "veo-3.1-fast-generate-preview"
     ] = Field(
-        "sora-2",
-        description="Video generation model to use (Sora for OpenAI, Veo 3.1 for Google Gemini)."
+        "sora-2-pro",
+        description=(
+            "Select the video generation model to utilize for your ads.\n"
+            "- sora-2-pro (recommended): $0.30/second\n"
+            "- sora-2: $0.10/second\n"
+            "- veo-3.1-generate-preview: $0.40/second\n"
+            "- veo-3.1-fast-generate-preview: $0.15/second\n"
+        )
     )
 
     # 3. Brand Guidelines
