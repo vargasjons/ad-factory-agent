@@ -14,9 +14,6 @@ config = {
     "secondary_goals": "Build trust and credibility, establish unique positioning in the market, create scalable ad production system",
     "visual_style_preferences": "Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
     "brand_colors": None,
-    "strategy_agent_reasoning": "high",
-    "brand_agent_reasoning": "medium",
-    "ugc_agent_reasoning": "medium",
     "video_generation_model": "sora-2",
     "script_format_preferences": "Natural conversational flow, one sentence per line for easy readability, direct-to-camera style suitable for UGC videos"
 }

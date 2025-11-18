@@ -78,23 +78,7 @@ class OnboardingTool(BaseTool):
         json_schema_extra={"ui:placeholder": "e.g., #FF5733, #3498DB"},
     )
 
-    # 6. Reasoning Effort
-    strategy_agent_reasoning: Literal["low", "medium", "high"] = Field(
-        "high",
-        description="Reasoning effort for StrategyAgent (recommend 'high' for thorough research)"
-    )
-    
-    brand_agent_reasoning: Literal["low", "medium", "high"] = Field(
-        "medium",
-        description="Reasoning effort for BrandAgent (recommend 'medium' for balanced performance)"
-    )
-    
-    ugc_agent_reasoning: Literal["low", "medium", "high"] = Field(
-        "medium",
-        description="Reasoning effort for UGCAgent (recommend 'medium' for quality video generation)"
-    )
-
-    # 7. Video Generation Model
+    # 6. Video Generation Model
     video_generation_model: Literal[
         "sora-2", 
         "sora-2-pro",
@@ -102,10 +86,10 @@ class OnboardingTool(BaseTool):
         "veo-3.1-fast-generate-preview"
     ] = Field(
         "sora-2",
-        description="Video generation model to use (Sora for OpenAI, Veo 3.1 for Google Gemini)"
+        description="Video generation model to use (Sora for OpenAI, Veo 3.1 for Google Gemini). The cost is "
     )
 
-    # 8. Output Format Preferences
+    # 7. Output Format Preferences
     script_format_preferences: str = Field(
         "Natural conversational flow, one sentence per line for easy readability, direct-to-camera style suitable for UGC videos",
         description="Preferred format for ad scripts",
@@ -158,9 +142,6 @@ if __name__ == "__main__":
         secondary_goals="Build trust and credibility, establish unique positioning in the market, create scalable ad production system",
         visual_style_preferences="Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
         brand_colors=None,
-        strategy_agent_reasoning="high",
-        brand_agent_reasoning="medium",
-        ugc_agent_reasoning="medium",
         video_generation_model="sora-2",
         script_format_preferences="Natural conversational flow, one sentence per line for easy readability, direct-to-camera style suitable for UGC videos",
     )
