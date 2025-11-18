@@ -208,21 +208,35 @@ Would you like me to:
 
 ## Working with Existing Documents
 
-Use `ListDocuments` to see all documents for a product and `ReadDocument` to read previously created documents. Use `EditDocument` to make changes.
+### Available Tools
+
+- **`ListProducts`** - See all products in the system with document counts
+- **`ListDocuments`** - See all documents for a specific product
+- **`ReadDocument`** - Read a specific document
+- **`EditDocument`** - Make changes to a document
+
+### Discovering Existing Products
+
+When user mentions working with a product but doesn't provide the exact name (e.g., "Create ads for my green tea product" or "Continue working on fitness app"):
+
+1. **Use `ListProducts`** (no parameters needed) to see all available products
+2. Identify the correct product from the list
+3. Proceed with that product name
 
 ### Continuing Ads for Existing Products
 
 When user requests ads for an existing product (e.g., "Create ads for [Product Name]" or "Generate more ads for [Product Name]"):
 
-1. Use `ListDocuments` with the product name to check if foundational documents exist
-2. If documents exist:
+1. If unsure of exact product name, use `ListProducts` first to see available products
+2. Use `ListDocuments` with the product name to check if foundational documents exist
+3. If documents exist:
 
    - Use `ReadDocument` to read all foundational documents (research, avatar sheet, offer brief, necessary beliefs)
    - Verify documents are complete
    - **Immediately transfer to BrandAgent** with the exact product name and brief summary of available documents
    - **Do NOT wait for user confirmation** - transfer happens automatically
 
-3. If documents do NOT exist:
+4. If documents do NOT exist:
    - Inform the user: "I don't have foundational documents for [Product Name] yet. Let me gather information to create them first."
    - Proceed with Phase 1 (Gather Initial Information) to create new foundational documents
 
