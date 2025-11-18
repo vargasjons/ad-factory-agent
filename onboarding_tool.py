@@ -12,7 +12,7 @@ class OnboardingTool(BaseTool):
 
     # 1. Company Information
     company_name: str = Field(
-        "Your Company",
+        ...,
         description="Your company or brand name"
     )
 
@@ -29,7 +29,7 @@ class OnboardingTool(BaseTool):
 
     # 3. Brand Guidelines
     visual_brand_guidelines: str = Field(
-        "Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
+        ...,
         description="Visual style preferences and brand guidelines for video ads (include aesthetic, mood, colors, etc.)",
         json_schema_extra={"ui:widget": "textarea"},
     )
@@ -69,9 +69,9 @@ config = {json_str}
 if __name__ == "__main__":
     tool = OnboardingTool(
         # Using defaults from current repository
-        company_name="Your Company",
+        company_name="[not provided by client]",
         video_generation_model="sora-2",
-        visual_brand_guidelines="Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
+        visual_brand_guidelines="[not provided by client]",
     )
     print(tool.run())
 

@@ -3,7 +3,7 @@
 # Do not edit manually - regenerate using the onboarding tool
 
 config = {
-    "company_name": "Your Company",
+    "company_name": "[not provided by client]",
     "video_generation_model": "sora-2",
-    "visual_brand_guidelines": "Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity"
+    "visual_brand_guidelines": "[not provided by client]"
 }
