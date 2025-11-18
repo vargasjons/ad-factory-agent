@@ -80,24 +80,15 @@ python agency.py
 
 ### What Can Be Customized?
 
-- **Company Information**: Name, industry, brand voice
-- **Target Audience**: Demographics and psychographics  
-- **Product Category**: Type of products/services
-- **Business Goals**: Primary and secondary objectives
-- **Brand Guidelines**: Visual style, colors
+- **Company Name**: Your company or brand name
 - **Video Generation Model**: Select between Sora (OpenAI) or Veo (Google Gemini) models
-- **Reasoning Effort**: Configure reasoning levels for each agent (low, medium, high)
-- **Output Preferences**: Script format preferences
+- **Visual Brand Guidelines**: Visual style preferences and brand guidelines for video ads
 
-**Note**: All agents use GPT-5.1 model for optimal performance.
+**Note**: Product-specific information (target audience, product details, business goals, etc.) is collected by the StrategyAgent during the initial conversation to avoid duplication and ensure information is always current for each product.
 
 ### Learn More
 
-See **[ONBOARDING.md](ONBOARDING.md)** for complete customization guide including:
-- Detailed configuration options
-- Managing multiple client configs
-- Best practices
-- Advanced usage examples
+For more details on the onboarding configuration, see the `OnboardingTool` class in `onboarding_tool.py`.
 
 ---
 

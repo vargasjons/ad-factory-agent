@@ -4,16 +4,6 @@
 
 config = {
     "company_name": "Your Company",
-    "industry": "E-commerce",
-    "brand_voice": "Professional yet approachable, authentic, and customer-focused",
-    "target_audience_demographics": "Adults 25-45, middle to upper-middle class, tech-savvy, value convenience and quality",
-    "target_audience_psychographics": "Health-conscious, busy professionals seeking solutions that save time, value authenticity over flashy marketing, active on social media",
-    "product_category": "Consumer Products",
-    "product_description": "High-quality products that solve specific customer problems with innovative approaches",
-    "primary_business_goal": "Increase product sales and brand awareness through high-converting UGC-style video ads",
-    "secondary_goals": "Build trust and credibility, establish unique positioning in the market, create scalable ad production system",
-    "visual_style_preferences": "Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
-    "brand_colors": None,
     "video_generation_model": "sora-2",
-    "script_format_preferences": "Natural conversational flow, one sentence per line for easy readability, direct-to-camera style suitable for UGC videos"
+    "visual_brand_guidelines": "Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity"
 }

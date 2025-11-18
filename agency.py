@@ -23,25 +23,10 @@ def render_shared_instructions():
     with open(instructions_path, "r", encoding="utf-8") as file:
         instructions = file.read()
     
-    # Handle brand colors section
-    brand_colors_section = ""
-    if config.get("brand_colors"):
-        brand_colors_section = f"**Brand Colors:** {config['brand_colors']}"
-    
     # Format the instructions with config values
     instructions = instructions.format(
         company_name=config.get("company_name", "Your Company"),
-        industry=config.get("industry", "E-commerce"),
-        brand_voice=config.get("brand_voice", "Professional and authentic"),
-        visual_style_preferences=config.get("visual_style_preferences", "Authentic UGC aesthetic"),
-        brand_colors_section=brand_colors_section,
-        target_audience_demographics=config.get("target_audience_demographics", "Not specified"),
-        target_audience_psychographics=config.get("target_audience_psychographics", "Not specified"),
-        product_description=config.get("product_description", "Not specified"),
-        product_category=config.get("product_category", "Consumer Products"),
-        primary_business_goal=config.get("primary_business_goal", "Increase sales"),
-        secondary_goals=config.get("secondary_goals", "Build brand awareness"),
-        script_format_preferences=config.get("script_format_preferences", "Natural conversational flow")
+        visual_brand_guidelines=config.get("visual_brand_guidelines", "Authentic UGC aesthetic, natural lighting, relatable settings")
     )
     
     return instructions

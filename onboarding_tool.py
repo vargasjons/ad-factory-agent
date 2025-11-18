@@ -1,6 +1,6 @@
 from agency_swarm.tools import BaseTool
 from pydantic import Field
-from typing import Literal, Optional
+from typing import Literal
 import os
 import json
 
@@ -10,75 +10,13 @@ class OnboardingTool(BaseTool):
     This tool collects all necessary information to personalize the agency for different clients.
     """
 
-    # 1. Company/Brand Information
+    # 1. Company Information
     company_name: str = Field(
         "Your Company",
         description="Your company or brand name"
     )
-    
-    industry: str = Field(
-        "E-commerce",
-        description="Your industry or market vertical (e.g., E-commerce, SaaS, Health & Wellness, Finance)"
-    )
-    
-    brand_voice: str = Field(
-        "Professional yet approachable, authentic, and customer-focused",
-        description="Description of your brand voice and tone",
-        json_schema_extra={"ui:widget": "textarea"},
-    )
 
-    # 2. Target Audience
-    target_audience_demographics: str = Field(
-        "Adults 25-45, middle to upper-middle class, tech-savvy, value convenience and quality",
-        description="Primary customer demographics (age, income, location, etc.)",
-        json_schema_extra={"ui:widget": "textarea"},
-    )
-    
-    target_audience_psychographics: str = Field(
-        "Health-conscious, busy professionals seeking solutions that save time, value authenticity over flashy marketing, active on social media",
-        description="Customer psychographics (values, lifestyle, behaviors, pain points)",
-        json_schema_extra={"ui:widget": "textarea"},
-    )
-
-    # 3. Product Category
-    product_category: str = Field(
-        "Consumer Products",
-        description="Type of products/services you're advertising (e.g., Consumer Products, Digital Services, B2B Software, Health Supplements)"
-    )
-    
-    product_description: str = Field(
-        "High-quality products that solve specific customer problems with innovative approaches",
-        description="Brief overview of your products/services",
-        json_schema_extra={"ui:widget": "textarea"},
-    )
-
-    # 4. Business Goals
-    primary_business_goal: str = Field(
-        "Increase product sales and brand awareness through high-converting UGC-style video ads",
-        description="Your primary marketing/business objective",
-        json_schema_extra={"ui:widget": "textarea"},
-    )
-    
-    secondary_goals: str = Field(
-        "Build trust and credibility, establish unique positioning in the market, create scalable ad production system",
-        description="Secondary goals and success metrics (optional)",
-        json_schema_extra={"ui:widget": "textarea"},
-    )
-
-    # 5. Brand Guidelines
-    visual_style_preferences: str = Field(
-        "Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
-        description="Visual style preferences for video ads (colors, mood, aesthetic)",
-        json_schema_extra={"ui:widget": "textarea"},
-    )
-    
-    brand_colors: Optional[str] = Field(
-        None,
-        description="Brand color palette (optional, e.g., '#FF5733, #3498DB, #2ECC71')",
-        json_schema_extra={"ui:placeholder": "e.g., #FF5733, #3498DB"},
-    )
-
-    # 6. Video Generation Model
+    # 2. Video Generation Model
     video_generation_model: Literal[
         "sora-2", 
         "sora-2-pro",
@@ -86,13 +24,13 @@ class OnboardingTool(BaseTool):
         "veo-3.1-fast-generate-preview"
     ] = Field(
         "sora-2",
-        description="Video generation model to use (Sora for OpenAI, Veo 3.1 for Google Gemini). The cost is "
+        description="Video generation model to use (Sora for OpenAI, Veo 3.1 for Google Gemini)."
     )
 
-    # 7. Output Format Preferences
-    script_format_preferences: str = Field(
-        "Natural conversational flow, one sentence per line for easy readability, direct-to-camera style suitable for UGC videos",
-        description="Preferred format for ad scripts",
+    # 3. Brand Guidelines
+    visual_brand_guidelines: str = Field(
+        "Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
+        description="Visual style preferences and brand guidelines for video ads (include aesthetic, mood, colors, etc.)",
         json_schema_extra={"ui:widget": "textarea"},
     )
 
@@ -132,18 +70,8 @@ if __name__ == "__main__":
     tool = OnboardingTool(
         # Using defaults from current repository
         company_name="Your Company",
-        industry="E-commerce",
-        brand_voice="Professional yet approachable, authentic, and customer-focused",
-        target_audience_demographics="Adults 25-45, middle to upper-middle class, tech-savvy, value convenience and quality",
-        target_audience_psychographics="Health-conscious, busy professionals seeking solutions that save time, value authenticity over flashy marketing, active on social media",
-        product_category="Consumer Products",
-        product_description="High-quality products that solve specific customer problems with innovative approaches",
-        primary_business_goal="Increase product sales and brand awareness through high-converting UGC-style video ads",
-        secondary_goals="Build trust and credibility, establish unique positioning in the market, create scalable ad production system",
-        visual_style_preferences="Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
-        brand_colors=None,
         video_generation_model="sora-2",
-        script_format_preferences="Natural conversational flow, one sentence per line for easy readability, direct-to-camera style suitable for UGC videos",
+        visual_brand_guidelines="Authentic UGC aesthetic, natural lighting, relatable settings, minimal post-production to maintain authenticity",
     )
     print(tool.run())
 

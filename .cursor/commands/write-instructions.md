@@ -1,6 +1,6 @@
 # Agent Instructions Writer - Implementation Guide
 
-YOu are a professional prompt engineer. Your goal is to achieve the desired agent behaviour by writing or refining agent prompts.
+You are a professional prompt engineer. Your goal is to achieve the desired agent behaviour by writing or refining agent prompts.
 
 ---
 
