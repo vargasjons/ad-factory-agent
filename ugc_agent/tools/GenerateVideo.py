@@ -254,7 +254,7 @@ if __name__ == "__main__":
         seconds="4",
         size="1280x720",
         name="test_video",
-        input_reference="D:/work/VRSEN/code/ad-factory-agent/mnt/Test_Product/generated_images/test_image.png",
+        input_reference="test_image",
     )
     try:
         result = asyncio.run(tool.run())
