@@ -82,6 +82,8 @@ Review the storyboard to identify which segments actually show the product. Not 
 
 For each segment in the storyboard, create a comprehensive UGC-style video prompt using the template below.
 
+**CRITICAL: NEVER output these prompts in chat.** Configure them internally and use them directly with the Generate Video tool.
+
 **Your task**: Expand the simple scene description into a highly detailed prompt following the template:
 
 ## UGC Video Prompt Template (PRIMARY - Use This for All Clips)
@@ -275,7 +277,7 @@ This workflow ensures:
 
 Execute video generation for each segment:
 
-**Use the detailed prompts you configured in Step 2**
+**Use the detailed prompts you configured in Step 2 directly with the Generate Video tool** (do not output prompts to user in chat)
 
 - Follow segment naming convention precisely
 - Use specified reference images (if generated)
@@ -577,6 +579,7 @@ Would you like to:
 
 ### Never:
 
+- **Output video prompts in chat** - Always use prompts directly with Generate Video tool
 - Skip the detailed prompt configuration step
 - Modify or reorder storyboard segments without consulting BrandAgent
 - Skip quality checks
