@@ -160,22 +160,11 @@ After that, based on all previously created documents, write out the few absolut
 
 ---
 
-## Handling User Revisions
+## Working with Existing Documents
 
-When users request changes to any created document, use the `EditDocument` tool:
+If user requests you to continue working on a previously created product, you can use the `ListDocuments` tool to see all documents for a product and the `ReadDocument` tool to read any previously created document.
 
-**Example:**
-
-```
-User: "Can you change the avatar name from Sarah to Jennifer in the avatar sheet?"
-
-Use EditDocument tool:
-- product_name: [same product name used when creating the document]
-- filename: "[brand_name]_avatar_sheet.md"
-- old_string: "Sarah" (or larger context if not unique)
-- new_string: "Jennifer"
-- replace_all: true (if replacing all occurrences)
-```
+When users request changes to any created document, use the `EditDocument` tool.
 
 ---
 
