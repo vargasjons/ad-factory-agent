@@ -1,7 +1,7 @@
 """Video generation tool supporting both Sora (OpenAI) and Veo (Google Gemini) models."""
 
 from typing import Literal, Optional
-import time
+import asyncio
 
 from openai import OpenAI
 from pydantic import Field, field_validator
@@ -95,13 +95,13 @@ class GenerateVideo(BaseTool):
 
         # Determine which model to use
         if is_sora_model(model):
-            return self._generate_with_sora(model)
+            return await self._generate_with_sora(model)
         elif is_veo_model(model):
-            return self._generate_with_veo(model)
+            return await self._generate_with_veo(model)
         else:
             raise ValueError(f"Unknown video model: {model}. Must be a Sora or Veo model.")
 
-    def _generate_with_sora(self, model: str) -> dict:
+    async def _generate_with_sora(self, model: str) -> dict:
         """Generate video using OpenAI's Sora API."""
         
         client: OpenAI = get_openai_client()
@@ -126,7 +126,13 @@ class GenerateVideo(BaseTool):
                 request_payload["input_reference"] = reference_file
 
             print(f"Submitting video generation request to Sora ({model})...")
-            video = client.videos.create_and_poll(**request_payload)
+            
+            # Run blocking operation in thread pool to avoid blocking event loop
+            loop = asyncio.get_event_loop()
+            video = await loop.run_in_executor(
+                None, 
+                lambda: client.videos.create_and_poll(**request_payload)
+            )
             print(f"Video generation status: {video.status}")
 
             # Save the generated video with all metadata
@@ -141,7 +147,7 @@ class GenerateVideo(BaseTool):
                 except Exception:
                     pass
 
-    def _generate_with_veo(self, model: str) -> dict:
+    async def _generate_with_veo(self, model: str) -> dict:
         """Generate video using Google's Veo API with optional reference image."""
         
         from google.genai.types import GenerateVideosConfig, Image, VideoGenerationReferenceImage
@@ -204,17 +210,26 @@ class GenerateVideo(BaseTool):
                 )
             
             print(f"Submitting video generation request to Veo ({model})...")
-            operation = client.models.generate_videos(
-                model=model,
-                prompt=self.prompt,
-                config=config,
+            
+            # Run blocking operation in thread pool to avoid blocking event loop
+            loop = asyncio.get_event_loop()
+            operation = await loop.run_in_executor(
+                None,
+                lambda: client.models.generate_videos(
+                    model=model,
+                    prompt=self.prompt,
+                    config=config,
+                )
             )
             
             # Poll the operation status until the video is ready
             while not operation.done:
                 print("Waiting for Veo video generation to complete...")
-                time.sleep(10)
-                operation = client.operations.get(operation)
+                await asyncio.sleep(10)
+                operation = await loop.run_in_executor(
+                    None,
+                    lambda: client.operations.get(operation)
+                )
             
             print("Video generation complete!")
             

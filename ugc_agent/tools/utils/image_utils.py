@@ -2,6 +2,7 @@ import os
 import io
 import base64
 from pathlib import Path
+import asyncio
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from PIL import Image
 from agents.tool import ToolOutputImage, ToolOutputText
@@ -128,22 +129,28 @@ def process_variant_result(variant_num, image, file_name, num_variants, compress
     }
 
 
-def run_parallel_variants(variant_func, num_variants):
-    """Run multiple variants in parallel using ThreadPoolExecutor"""
+async def run_parallel_variants(variant_func, num_variants):
+    """Run multiple variants in parallel using asyncio and ThreadPoolExecutor"""
     results = []
     
-    with ThreadPoolExecutor(max_workers=min(num_variants, 4)) as executor:
-        # Submit all tasks
-        future_to_variant = {
-            executor.submit(variant_func, i + 1): i + 1 
-            for i in range(num_variants)
-        }
-        
-        # Collect results as they complete
-        for future in as_completed(future_to_variant):
-            result = future.result()
-            if result is not None:
-                results.append(result)
+    # Run synchronous variant_func in thread pool to avoid blocking event loop
+    loop = asyncio.get_event_loop()
+    
+    # Create tasks for all variants
+    tasks = [
+        loop.run_in_executor(None, variant_func, i + 1)
+        for i in range(num_variants)
+    ]
+    
+    # Wait for all tasks to complete
+    completed_results = await asyncio.gather(*tasks, return_exceptions=True)
+    
+    # Filter out None results and exceptions
+    for result in completed_results:
+        if result is not None and not isinstance(result, Exception):
+            results.append(result)
+        elif isinstance(result, Exception):
+            print(f"Variant generation error: {result}")
     
     return results
 

@@ -158,7 +158,7 @@ class CombineImages(BaseTool):
                 return None
 
         # Step 5: Run variants in parallel
-        results = run_parallel_variants(combine_single_variant, self.num_variants)
+        results = await run_parallel_variants(combine_single_variant, self.num_variants)
 
         if not results:
             raise RuntimeError("No variants were successfully generated")

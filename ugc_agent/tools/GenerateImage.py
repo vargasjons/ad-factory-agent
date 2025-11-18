@@ -132,7 +132,7 @@ class GenerateImage(BaseTool):
                 return None
 
         # Step 4: Run variants in parallel
-        results = run_parallel_variants(generate_single_variant, self.num_variants)
+        results = await run_parallel_variants(generate_single_variant, self.num_variants)
 
         if not results:
             raise RuntimeError("No variants were successfully generated")

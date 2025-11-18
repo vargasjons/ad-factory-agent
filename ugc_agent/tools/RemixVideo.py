@@ -1,5 +1,6 @@
 """Tool for remixing existing Sora videos."""
 
+import asyncio
 from openai import OpenAI
 from pydantic import Field, field_validator, model_validator
 
@@ -75,17 +76,26 @@ class RemixVideo(BaseTool):
         """Send a remix request to the Sora API, poll until completion, and save the video."""
 
         client: OpenAI = get_openai_client()
+        
+        # Run blocking operations in thread pool to avoid blocking event loop
+        loop = asyncio.get_event_loop()
 
         print("Submitting video remix request to Sora...")
-        video = client.videos.remix(
-            video_id=self.video_id,
-            prompt=self.prompt,
+        video = await loop.run_in_executor(
+            None,
+            lambda: client.videos.remix(
+                video_id=self.video_id,
+                prompt=self.prompt,
+            )
         )
         
         print(f"Remix job created: {video.id}, status: {video.status}")
         
         # Poll until the video is completed or failed
-        video = client.videos.poll(video.id)
+        video = await loop.run_in_executor(
+            None,
+            lambda: client.videos.poll(video.id)
+        )
         
         print(f"Video remix status: {video.status}")
         
