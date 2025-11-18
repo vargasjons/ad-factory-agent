@@ -231,7 +231,27 @@ class GenerateVideo(BaseTool):
                     ],
                 )
             
-            print(f"Submitting video generation request to Veo ({model})...")
+            # Convert size to aspect ratio for Veo
+            aspect_ratio = None
+            if self.size:
+                width, height = self.size.split('x')
+                # Simplify aspect ratio (e.g., 720x1280 -> 9:16, 1280x720 -> 16:9)
+                if width == "720" and height == "1280":
+                    aspect_ratio = "9:16"
+                elif width == "1280" and height == "720":
+                    aspect_ratio = "16:9"
+                elif width == "1024" and height == "1792":
+                    aspect_ratio = "9:16"
+                elif width == "1792" and height == "1024":
+                    aspect_ratio = "16:9"
+                else:
+                    # Calculate GCD for other ratios
+                    from math import gcd
+                    w, h = int(width), int(height)
+                    divisor = gcd(w, h)
+                    aspect_ratio = f"{w//divisor}:{h//divisor}"
+            
+            print(f"Submitting video generation request to Veo ({model}) with aspect ratio: {aspect_ratio}...")
             
             # Run blocking operation in thread pool to avoid blocking event loop
             loop = asyncio.get_event_loop()
@@ -241,6 +261,7 @@ class GenerateVideo(BaseTool):
                     model=model,
                     prompt=self.prompt,
                     config=config,
+                    aspect_ratio=aspect_ratio,
                 )
             )
             
