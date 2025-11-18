@@ -4,6 +4,7 @@
 
 config = {
     "company_name": "[not provided by client]",
-    "video_generation_model": "sora-2",
+    "sora_model": "sora-2",
+    "veo_model": "veo-3.1-generate-preview",
     "visual_brand_guidelines": "[not provided by client]"
 }

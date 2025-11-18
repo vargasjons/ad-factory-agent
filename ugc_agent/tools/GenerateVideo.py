@@ -63,6 +63,15 @@ class GenerateVideo(BaseTool):
         default='1280x720',
         description="Optional resolution in WIDTHxHEIGHT format (e.g. 1280x720).",
     )
+    model: Optional[Literal["sora", "veo"]] = Field(
+        default=None,
+        description=(
+            "Explicitly specify which model type to use for this video:\n"
+            "- 'sora': Use Sora model (from onboarding config) - best for b-rolls and new characters\n"
+            "- 'veo': Use Veo model (from onboarding config) - best for character consistency\n"
+            "- None (default): Agent automatically selects based on context"
+        ),
+    )
 
     @field_validator("prompt")
     @classmethod
@@ -84,22 +93,35 @@ class GenerateVideo(BaseTool):
     async def run(self) -> dict:
         """Generate a marketing video using either Sora (OpenAI) or Veo (Google Gemini)."""
         
-        # Get the video model from onboarding config
+        # Get model configuration from onboarding config
         try:
             from onboarding_config import config
-            model = config.get("video_generation_model", SORA_MODEL)
+            sora_model = config.get("sora_model", SORA_MODEL)
+            veo_model = config.get("veo_model", "veo-3.1-generate-preview")
         except ImportError:
-            # Fallback to default if config not available
-            model = SORA_MODEL
-            print(f"Warning: onboarding_config not found, using default model: {model}")
+            # Fallback to defaults if config not available
+            sora_model = SORA_MODEL
+            veo_model = "veo-3.1-generate-preview"
+            print(f"Warning: onboarding_config not found, using defaults - Sora: {sora_model}, Veo: {veo_model}")
 
-        # Determine which model to use
-        if is_sora_model(model):
-            return await self._generate_with_sora(model)
-        elif is_veo_model(model):
-            return await self._generate_with_veo(model)
+        # Determine which specific model to use
+        if self.model == "sora":
+            # Explicitly requested Sora
+            selected_model = sora_model
+        elif self.model == "veo":
+            # Explicitly requested Veo
+            selected_model = veo_model
         else:
-            raise ValueError(f"Unknown video model: {model}. Must be a Sora or Veo model.")
+            # Default: use Sora for general/b-roll content
+            selected_model = sora_model
+
+        # Route to appropriate generation method
+        if is_sora_model(selected_model):
+            return await self._generate_with_sora(selected_model)
+        elif is_veo_model(selected_model):
+            return await self._generate_with_veo(selected_model)
+        else:
+            raise ValueError(f"Unknown video model: {selected_model}. Must be a Sora or Veo model.")
 
     async def _generate_with_sora(self, model: str) -> dict:
         """Generate video using OpenAI's Sora API."""

@@ -16,24 +16,33 @@ class OnboardingTool(BaseTool):
         description="Your company or brand name"
     )
 
-    # 2. Video Generation Model
-    video_generation_model: Literal[
+    # 2. Sora Model Selection (for b-rolls and new characters)
+    sora_model: Literal[
         "sora-2", 
-        "sora-2-pro",
-        "veo-3.1-generate-preview",
-        "veo-3.1-fast-generate-preview"
+        "sora-2-pro"
     ] = Field(
         "sora-2",
         description=(
-            "Select the video generation model to utilize for your ads.\n"
-            "- sora-2-pro (recommended for production): $0.30/second\n"
+            "Select the Sora model version for b-rolls, new characters, and general video generation.\n"
             "- sora-2 (recommended for testing): $0.10/second\n"
+            "- sora-2-pro (recommended for production): $0.30/second\n"
+        )
+    )
+
+    # 3. Veo Model Selection (for character consistency)
+    veo_model: Literal[
+        "veo-3.1-generate-preview",
+        "veo-3.1-fast-generate-preview"
+    ] = Field(
+        "veo-3.1-generate-preview",
+        description=(
+            "Select the Veo model for videos requiring character consistency across multiple clips.\n"
             "- veo-3.1-generate-preview: $0.40/second\n"
             "- veo-3.1-fast-generate-preview: $0.15/second\n"
         )
     )
 
-    # 3. Brand Guidelines
+    # 4. Brand Guidelines
     visual_brand_guidelines: str = Field(
         ...,
         description="Visual style preferences and brand guidelines for video ads (include aesthetic, mood, colors, etc.)",
@@ -76,7 +85,8 @@ if __name__ == "__main__":
     tool = OnboardingTool(
         # Using defaults from current repository
         company_name="[not provided by client]",
-        video_generation_model="sora-2",
+        sora_model="sora-2",
+        veo_model="veo-3.1-generate-preview",
         visual_brand_guidelines="[not provided by client]",
     )
     print(tool.run())
