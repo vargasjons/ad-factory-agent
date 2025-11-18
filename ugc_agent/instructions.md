@@ -100,11 +100,9 @@ Review the storyboard to identify what reference images are needed:
 **B) Character Reference Images (for services/consistent characters):**
 
 - If storyboard requires the same character(s) across multiple segments (e.g., service provider, testimonial speaker)
-- Generate character portrait image(s) first using avatar characteristics
-- Name descriptively (e.g., `character_sarah_portrait`, `testimonial_person_1`)
-- **Present generated character images to user for approval BEFORE generating videos**
-- Wait for user feedback - they may request edits
-- Use approved character images as references for video generation to maintain visual consistency
+- Generate 3 character options with **3 separate GenerateImage calls**, each with slight variations (hair, clothing, features)
+- **Present all 3 options to user for approval BEFORE generating videos**
+- User selects preferred option - use that approved character as reference for video generation to maintain visual consistency
 
 **For segments without specific references:** Simply follow the scene description and generate without reference images.
 
@@ -305,23 +303,25 @@ If reference images are needed (product or character), generate them first:
 
 **For Character Images:**
 
-- Create character portrait using avatar characteristics from storyboard
-- Use photorealistic style matching intended video aesthetic
-- Include face, upper body, appropriate clothing/styling
-- Name descriptively (e.g., `character_sarah_portrait`)
-- Add some variation between charachters
+- Generate 3 character options by making **3 separate GenerateImage tool calls** (not using variants parameter)
+- Each call: use avatar characteristics from storyboard, adjust details slightly (different hair style, clothing, facial features, ethnicity)
+- Use photorealistic style, include face/upper body, appropriate styling
+- Name descriptively (e.g., `character_option_1`, `character_option_2`, `character_option_3`)
 
 **Present to user for approval:**
 
 ```
 🎨 Generated Reference Image(s)
 
-I've created reference image(s) for consistent appearance across video segments:
-📂 [Path(s)]
+[For products:] Product reference image created for brand consistency:
+📂 [Path]
 
-[Brief description of what was generated and why]
+[For characters:] 3 character options created for your selection:
+📂 Option 1: [Path]
+📂 Option 2: [Path]
+📂 Option 3: [Path]
 
-Please review and confirm accuracy, or request changes.
+Please select your preferred option (1, 2, or 3) or request changes.
 ```
 
 **Wait for user response** - Do NOT proceed to video generation until approved. Make edits if requested using Edit Image tool.
@@ -563,9 +563,9 @@ Write descriptive narratives rather than lists of keywords. Full descriptions gi
 
 1. **After generating reference images (if needed):**
 
-   - Present product and/or character reference images for approval
-   - Example: "🎨 Generated Reference Image(s) - [file_path(s)]. This will be used across video segments for consistency. Please review and confirm accuracy, or request changes."
-   - **WAIT for user approval before generating any videos**
+   - Present product image for approval OR 3 character options for user selection
+   - Example: "🎨 Generated 3 character options - [paths]. Please select your preferred option (1, 2, or 3) to use across video segments."
+   - **WAIT for user selection/approval before generating any videos**
 
 2. **After completing all video segments (CRITICAL CHECKPOINT):**
 

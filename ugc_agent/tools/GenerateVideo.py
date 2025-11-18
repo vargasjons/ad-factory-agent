@@ -26,7 +26,7 @@ class GenerateVideo(BaseTool):
     """
     Generates a video using either OpenAI's Sora or Google's Veo model.
 
-    Tool is stateless, and does not maintain any charahcters / scenes / etc between calls.
+    Tool is stateless, and does not maintain any charahcters / scenes / etc between calls. It does not support variables like [INTERNAL PROMPT] in the prompt.
 
     **Important**: Sora 2 and Sora 2 Pro do not support reference images with faces.
     
