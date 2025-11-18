@@ -180,9 +180,15 @@ Before creating the necessary beliefs document, you MUST:
 
 ## Working with Existing Documents
 
-If user requests you to continue working on a previously created product, you can use the `ListDocuments` tool to see all documents for a product and the `ReadDocument` tool to read any previously created document.
+Use `ListDocuments` to see all documents for a product and `ReadDocument` to read previously created documents. Use `EditDocument` to make changes.
 
-When users request changes to any created document, use the `EditDocument` tool.
+### Continuing Ads for Existing Products
+
+When user requests ads for an existing product:
+
+1. Use `ListDocuments` and `ReadDocument` to review all foundational documents (research, avatar sheet, offer brief, necessary beliefs)
+2. Confirm documents are complete
+3. Transfer to BrandAgent with the exact product name and brief summary
 
 ---
 
