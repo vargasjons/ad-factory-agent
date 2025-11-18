@@ -71,7 +71,7 @@ class RemixVideo(BaseTool):
         
         return self
 
-    def run(self) -> list:
+    async def run(self) -> list:
         """Send a remix request to the Sora API, poll until completion, and save the video."""
 
         client: OpenAI = get_openai_client()
@@ -96,6 +96,8 @@ class RemixVideo(BaseTool):
 
 
 if __name__ == "__main__":
+    import asyncio
+    
     tool = RemixVideo(
         product_name="Test_Product",
         video_id="video_690ae26779a88191afbc43b9bc4151a007197f9b393bc6f9",
@@ -103,7 +105,7 @@ if __name__ == "__main__":
         name="podcaster_1_remix",
     )
     try:
-        print(tool.run())
+        print(asyncio.run(tool.run()))
     except Exception as exc:
         print(f"Video remix failed: {exc}")
 

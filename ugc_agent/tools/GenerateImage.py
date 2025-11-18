@@ -75,7 +75,7 @@ class GenerateImage(BaseTool):
             raise ValueError("num_variants must be between 1 and 4")
         return value
 
-    def run(self) -> list:
+    async def run(self) -> list:
         """Generate images using the Gemini API."""
 
         # Step 1: Get API key from environment
@@ -145,6 +145,8 @@ class GenerateImage(BaseTool):
         return create_image_urls(results, include_text_labels=True)
 
 if __name__ == "__main__":
+    import asyncio
+    
     # Example usage with Google Gemini 2.5 Flash Image
     tool = GenerateImage(
         product_name="Test_Product",
@@ -157,7 +159,7 @@ if __name__ == "__main__":
         aspect_ratio="16:9",
     )
     try:
-        result = tool.run()
+        result = asyncio.run(tool.run())
         print(result)
     except Exception as exc:
         print(f"Image generation failed: {exc}")

@@ -78,7 +78,7 @@ class GenerateVideo(BaseTool):
     def _size_format(cls, value: Optional[str]) -> Optional[str]:
         return validate_resolution(value)
 
-    def run(self) -> dict:
+    async def run(self) -> dict:
         """Generate a marketing video using either Sora (OpenAI) or Veo (Google Gemini)."""
         
         # Get the video model from onboarding config
@@ -226,6 +226,8 @@ class GenerateVideo(BaseTool):
 
 
 if __name__ == "__main__":
+    import asyncio
+    
     tool = GenerateVideo(
         product_name="Test_Product",
         prompt=(
@@ -237,7 +239,7 @@ if __name__ == "__main__":
         input_reference="D:/work/VRSEN/code/ad-factory-agent/mnt/Test_Product/generated_images/test_image.png",
     )
     try:
-        result = tool.run()
+        result = asyncio.run(tool.run())
         print(result)
     except Exception as exc:
         print(f"Video generation failed: {exc}")
