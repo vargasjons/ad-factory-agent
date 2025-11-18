@@ -45,8 +45,8 @@ class GenerateVideo(BaseTool):
         description="The name for the generated video file (without extension)",
     )
     seconds: Literal["4", "8", "12"] = Field(
-        default="4",
-        description="Clip length in seconds. Sora currently supports clips up to 12 seconds.",
+        default="8",
+        description="Clip length in seconds. Sora currently supports clips up to 12 seconds. Use 8 second for shorter clips like b rolls and 12 seconds for longer scripts that contain multiple sentences.",
     )
     input_reference: Optional[str] = Field(
         default=None,
