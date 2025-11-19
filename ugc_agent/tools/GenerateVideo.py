@@ -40,7 +40,9 @@ class GenerateVideo(BaseTool):
         ...,
         description=(
             "Detailed marketing description of the desired video. Include subjects, "
-            "camera motion, lighting, and mood for the video generation model."
+            "camera motion, lighting, and mood for the video generation model. "
+            "Be ware that sometimes including things you DONT want to display in the video "
+            "can cause the model to generate them instead. Simply don't mention what you don't want to see in the prompt."
         ),
     )
     name: str = Field(

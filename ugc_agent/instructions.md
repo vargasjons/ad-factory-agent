@@ -373,6 +373,7 @@ Review these carefully:
 - Color grading and lighting
 - Action flow and timing
 - Any unwanted elements or artifacts
+- **Unwanted frames at beginning or end**: If certain frames at the start or end aren't ideal, use the **Trim Video** tool to remove them
 
 ### 6. Regenerate or Remix (If Needed)
 
@@ -551,7 +552,7 @@ Write descriptive narratives rather than lists of keywords. Full descriptions gi
 
 4. **After adding subtitles (if requested):**
 
-   - Present subtitled video and ask for feedback
+   - Present final subtitled video and ask for feedback (no intermediate progress during generation)
    - Example: "📹 Subtitled video complete: [file_path]. Please review the subtitles. Are the timing, position, and styling satisfactory? If you'd like adjustments (different position, color, size, or words per clip), I can regenerate with new settings."
    - **WAIT for user feedback** before final delivery
 
@@ -620,9 +621,9 @@ Would you like to:
 
 - **Always wait for user response** at major checkpoints (reference image approval, all segments complete, final video ready, subtitles added)
 - **Always prompt user to check for quality issues** when presenting segments (audio cutoffs, flow, artifacts)
-- **Always ask for subtitle feedback** after adding subtitles (timing, position, styling)
+- **Always ask for subtitle feedback** after adding subtitles (present final result only, no intermediate progress)
 - **Offer solutions for common issues** (shorten script for cutoffs, trim for artifacts, regenerate for flow, adjust subtitle settings)
-- **Keep progress updates brief** - Simple status updates don't need to stop workflow
+- **Keep progress updates minimal** - Only show intermediate results when user needs to approve/pick something (like individual segments), not during subtitles or post-production
 - **Request explicit approval** before major steps (combining, adding subtitles, final delivery)
 - **Never assume approval** - Always ask before proceeding to final deliverables
 - **Make decisions easy** - Provide clear options for what user can choose
@@ -675,7 +676,7 @@ Would you like to:
 - Expect Remix tool to remember other videos (it only sees the current video)
 - Add subtitles without explicitly asking the user first
 - Skip the subtitle offer after the final video is complete
-- **Skip asking for subtitle feedback** after adding subtitles (always present subtitled video and wait for approval)
+- **Skip asking for subtitle feedback** after adding subtitles (always present final subtitled video and wait for approval, no intermediate progress)
 - **Proceed to final delivery immediately after adding subtitles** without giving user a chance to review
 - **Skip providing segment paths at the approval checkpoint** (always show all segment paths after generation is complete)
 - **Provide individual segment paths in final deliverables** (only provide combined/subtitled video in final delivery, NOT individual segments)
@@ -697,8 +698,8 @@ Would you like to:
 10. **Wait for user approval** before combining (offer to regenerate or adjust if needed)
 11. **Combine segments** in exact order (only after user approves)
 12. **Present combined video** and ask user about subtitles
-13. **Add subtitles** if requested
-14. **Present subtitled video and ask for feedback** (if subtitles were added) - CRITICAL CHECKPOINT
+13. **Add subtitles** if requested (no intermediate progress shown)
+14. **Present final subtitled video and ask for feedback** (if subtitles were added) - CRITICAL CHECKPOINT
 15. **Wait for subtitle approval** (offer to regenerate with different settings if needed)
 16. **Deliver final assets** with summary (combined or subtitled video only, NOT individual segments)
 
