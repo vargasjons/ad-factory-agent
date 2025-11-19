@@ -61,7 +61,7 @@ class GenerateVideo(BaseTool):
     )
     size: Literal['720x1280', '1280x720', '1024x1792', '1792x1024'] = Field(
         default='1280x720',
-        description="Optional resolution in WIDTHxHEIGHT format (e.g. 1280x720).",
+        description="Optional resolution in WIDTHxHEIGHT format (e.g. 1280x720). For Sora: exact resolution. For Veo: converted to aspect ratio.",
     )
     model: Optional[Literal["sora", "veo"]] = Field(
         default=None,
@@ -178,8 +178,29 @@ class GenerateVideo(BaseTool):
         client = get_gemini_client()
         
         try:
-            # Prepare config with reference image if provided
-            config = None
+            # Convert size to aspect ratio for Veo
+            aspect_ratio = "16:9"  # default
+            if self.size:
+                width, height = self.size.split('x')
+                # Simplify aspect ratio (e.g., 720x1280 -> 9:16, 1280x720 -> 16:9)
+                if width == "720" and height == "1280":
+                    aspect_ratio = "9:16"
+                elif width == "1280" and height == "720":
+                    aspect_ratio = "16:9"
+                elif width == "1024" and height == "1792":
+                    aspect_ratio = "9:16"
+                elif width == "1792" and height == "1024":
+                    aspect_ratio = "16:9"
+                else:
+                    # Calculate GCD for other ratios
+                    from math import gcd
+                    w, h = int(width), int(height)
+                    divisor = gcd(w, h)
+                    aspect_ratio = f"{w//divisor}:{h//divisor}"
+            
+            # Prepare config with aspect ratio and optional reference image
+            config_kwargs = {"aspect_ratio": aspect_ratio}
+            
             if self.input_reference:
                 # Load the reference image
                 from ugc_agent.tools.utils.image_utils import load_image_by_name, get_images_dir
@@ -218,38 +239,19 @@ class GenerateVideo(BaseTool):
                 if not mime_type or not mime_type.startswith('image/'):
                     mime_type = "image/png"
                 
-                # Create config with reference images using the proper structure
-                config = GenerateVideosConfig(
-                    reference_images=[
-                        VideoGenerationReferenceImage(
-                            image=Image(
-                                image_bytes=image_bytes,
-                                mime_type=mime_type,
-                            ),
-                            reference_type="asset",
+                # Add reference images to config
+                config_kwargs["reference_images"] = [
+                    VideoGenerationReferenceImage(
+                        image=Image(
+                            image_bytes=image_bytes,
+                            mime_type=mime_type,
                         ),
-                    ],
-                )
+                        reference_type="asset",
+                    ),
+                ]
             
-            # Convert size to aspect ratio for Veo
-            aspect_ratio = None
-            if self.size:
-                width, height = self.size.split('x')
-                # Simplify aspect ratio (e.g., 720x1280 -> 9:16, 1280x720 -> 16:9)
-                if width == "720" and height == "1280":
-                    aspect_ratio = "9:16"
-                elif width == "1280" and height == "720":
-                    aspect_ratio = "16:9"
-                elif width == "1024" and height == "1792":
-                    aspect_ratio = "9:16"
-                elif width == "1792" and height == "1024":
-                    aspect_ratio = "16:9"
-                else:
-                    # Calculate GCD for other ratios
-                    from math import gcd
-                    w, h = int(width), int(height)
-                    divisor = gcd(w, h)
-                    aspect_ratio = f"{w//divisor}:{h//divisor}"
+            # Create config with all parameters
+            config = GenerateVideosConfig(**config_kwargs)
             
             print(f"Submitting video generation request to Veo ({model}) with aspect ratio: {aspect_ratio}...")
             
@@ -261,7 +263,6 @@ class GenerateVideo(BaseTool):
                     model=model,
                     prompt=self.prompt,
                     config=config,
-                    aspect_ratio=aspect_ratio,
                 )
             )
             
@@ -296,8 +297,9 @@ if __name__ == "__main__":
         ),
         seconds="4",
         size="1280x720",
-        name="test_video",
+        name="test_video_veo",
         input_reference="test_image",
+        model="veo",  # Test Veo model with aspectRatio parameter
     )
     try:
         result = asyncio.run(tool.run())

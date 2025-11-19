@@ -1,6 +1,7 @@
 """Tool for remixing existing Sora videos."""
 
 import asyncio
+from typing import Optional, Literal
 from openai import OpenAI
 from pydantic import Field, field_validator, model_validator
 
@@ -11,12 +12,6 @@ from ugc_agent.tools.utils.video_utils import (
     get_openai_client,
     save_video_with_metadata,
 )
-
-# Import config to check video generation model
-try:
-    from onboarding_config import config
-except ImportError:
-    config = {"video_generation_model": "sora-2"}  # Default to Sora if config not found
 
 
 class RemixVideo(BaseTool):
@@ -32,7 +27,7 @@ class RemixVideo(BaseTool):
     )
     video_id: str = Field(
         ...,
-        description="Identifier of the previously generated video job to remix.",
+        description="Identifier of the previously generated video job to remix. Must be a valid Sora video ID.",
     )
     prompt: str = Field(
         ...,
@@ -44,6 +39,15 @@ class RemixVideo(BaseTool):
     name: str = Field(
         ...,
         description="The name for the remixed video file (without extension)",
+    )
+    model: Optional[Literal["sora", "veo"]] = Field(
+        default=None,
+        description=(
+            "Explicitly specify which model type to use for this remix:\n"
+            "- 'sora': Use Sora model (remix supported)\n"
+            "- 'veo': NOT SUPPORTED - Veo does not support remix\n"
+            "- None (default): Agent automatically selects Sora (only option for remix)"
+        ),
     )
 
     @field_validator("video_id")
@@ -59,14 +63,12 @@ class RemixVideo(BaseTool):
     @model_validator(mode='after')
     def _check_model_is_sora(self):
         """Validate that the video generation model is Sora (remix not supported by Veo)."""
-        video_model = config.get("video_generation_model", "sora-2")
-        
-        # Check if model is Veo (starts with "veo-")
-        if video_model.startswith("veo-"):
+        # Check if user explicitly requested Veo
+        if self.model == "veo":
             raise ValueError(
-                "Remix Video is not supported with current video generation model.\n\n"
+                "Remix Video is not supported with Veo models.\n\n"
                 "To modify a Veo video:\n"
-                "1. Regenerate the video with a modified prompt using GenerateVideo\n"
+                "1. Regenerate the video with a modified prompt using GenerateVideo with model='veo'\n"
                 "2. Use the same reference image or 1st starting frame if needed for consistency\n\n"
             )
         
