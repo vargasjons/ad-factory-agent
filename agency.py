@@ -45,7 +45,7 @@ def create_agency(load_threads_callback=None):
         communication_flows=[
             (strategy_agent > brand_agent > ugc_agent, SendMessageHandoff),  # Linear flow: Strategy → Script & Storyboard → Execution
         ],
-        name="AdCreatorAgency",
+        name="UGC AD Factory",
         shared_instructions=render_shared_instructions(),  # Dynamic instructions from config
         load_threads_callback=load_threads_callback,
     )
