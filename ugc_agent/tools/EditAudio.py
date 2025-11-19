@@ -17,7 +17,7 @@ from ugc_agent.tools.utils.video_utils import (
 from agency_swarm import ToolOutputText
 
 
-class MixAudioVideo(BaseTool):
+class EditAudio(BaseTool):
     """
     Combine audio from one video with visuals from another video.
     
@@ -331,7 +331,7 @@ if __name__ == "__main__":
         # Example: Combine audio from one video with b-roll from another
         # Audio is 4s, b-roll is 26.8s - b-roll continues after audio ends
         # Video starts 5 seconds after audio (audio pre-roll)
-        tool = MixAudioVideo(
+        tool = EditAudio(
             product_name="Test_Product",
             audio_source="test_video",  # Audio from this video (4s)
             video_source="Ad2_3seg_AI_Employee_UGC_final",  # Visuals from this video (26.8s)
