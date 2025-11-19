@@ -29,20 +29,7 @@ class OnboardingTool(BaseTool):
         )
     )
 
-    # 3. Veo Model Selection (for character consistency)
-    veo_model: Literal[
-        "veo-3.1-generate-preview",
-        "veo-3.1-fast-generate-preview"
-    ] = Field(
-        "veo-3.1-generate-preview",
-        description=(
-            "Select the Veo model for videos requiring character consistency across multiple clips.\n"
-            "- veo-3.1-generate-preview: $0.40/second\n"
-            "- veo-3.1-fast-generate-preview: $0.15/second\n"
-        )
-    )
-
-    # 4. Brand Guidelines
+    # 3. Brand Guidelines
     visual_brand_guidelines: str = Field(
         ...,
         description="Visual style preferences and brand guidelines for video ads (include aesthetic, mood, colors, etc.)",
@@ -86,7 +73,6 @@ if __name__ == "__main__":
         # Using defaults from current repository
         company_name="[not provided by client]",
         sora_model="sora-2",
-        veo_model="veo-3.1-generate-preview",
         visual_brand_guidelines="[not provided by client]",
     )
     print(tool.run())

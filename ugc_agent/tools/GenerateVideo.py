@@ -61,16 +61,7 @@ class GenerateVideo(BaseTool):
     )
     size: Literal['720x1280', '1280x720', '1024x1792', '1792x1024'] = Field(
         default='1280x720',
-        description="Optional resolution in WIDTHxHEIGHT format (e.g. 1280x720). For Sora: exact resolution. For Veo: converted to aspect ratio.",
-    )
-    model: Optional[Literal["sora", "veo"]] = Field(
-        default=None,
-        description=(
-            "Explicitly specify which model type to use for this video:\n"
-            "- 'sora': Use Sora model (from onboarding config) - best for b-rolls and new characters\n"
-            "- 'veo': Use Veo model (from onboarding config) - best for character consistency\n"
-            "- None (default): Agent automatically selects based on context"
-        ),
+        description="Optional resolution in WIDTHxHEIGHT format (e.g. 1280x720). For Sora: exact resolution. For Veo: reference image will be cropped/resized to match this aspect ratio to prevent stretching.",
     )
 
     @field_validator("prompt")
@@ -91,37 +82,33 @@ class GenerateVideo(BaseTool):
         return validate_resolution(value)
 
     async def run(self) -> dict:
-        """Generate a marketing video using either Sora (OpenAI) or Veo (Google Gemini)."""
+        """Generate a marketing video (Sora by default)."""
         
         # Get model configuration from onboarding config
         try:
             from onboarding_config import config
-            sora_model = config.get("sora_model", SORA_MODEL)
-            veo_model = config.get("veo_model", "veo-3.1-generate-preview")
         except ImportError:
-            # Fallback to defaults if config not available
-            sora_model = SORA_MODEL
-            veo_model = "veo-3.1-generate-preview"
-            print(f"Warning: onboarding_config not found, using defaults - Sora: {sora_model}, Veo: {veo_model}")
+            config = {}
+            print("Warning: onboarding_config not found, using defaults.")
+        
+        sora_model = config.get("sora_model", SORA_MODEL)
+        veo_model = config.get("veo_model")
 
-        # Determine which specific model to use
-        if self.model == "sora":
-            # Explicitly requested Sora
-            selected_model = sora_model
-        elif self.model == "veo":
-            # Explicitly requested Veo
-            selected_model = veo_model
-        else:
-            # Default: use Sora for general/b-roll content
-            selected_model = sora_model
+        selected_model = sora_model
 
-        # Route to appropriate generation method
         if is_sora_model(selected_model):
             return await self._generate_with_sora(selected_model)
-        elif is_veo_model(selected_model):
+
+        if is_veo_model(selected_model):
             return await self._generate_with_veo(selected_model)
-        else:
-            raise ValueError(f"Unknown video model: {selected_model}. Must be a Sora or Veo model.")
+
+        if veo_model and is_veo_model(veo_model):
+            return await self._generate_with_veo(veo_model)
+
+        if is_sora_model(SORA_MODEL):
+            return await self._generate_with_sora(SORA_MODEL)
+
+        raise ValueError(f"Unable to determine a valid video model (sora_model={sora_model}, veo_model={veo_model}).")
 
     async def _generate_with_sora(self, model: str) -> dict:
         """Generate video using OpenAI's Sora API."""
@@ -173,33 +160,22 @@ class GenerateVideo(BaseTool):
         """Generate video using Google's Veo API with optional reference image."""
         
         from google.genai.types import GenerateVideosConfig, Image, VideoGenerationReferenceImage
-        import mimetypes
         
         client = get_gemini_client()
         
         try:
-            # Convert size to aspect ratio for Veo
-            aspect_ratio = "16:9"  # default
-            if self.size:
-                width, height = self.size.split('x')
-                # Simplify aspect ratio (e.g., 720x1280 -> 9:16, 1280x720 -> 16:9)
-                if width == "720" and height == "1280":
-                    aspect_ratio = "9:16"
-                elif width == "1280" and height == "720":
-                    aspect_ratio = "16:9"
-                elif width == "1024" and height == "1792":
-                    aspect_ratio = "9:16"
-                elif width == "1792" and height == "1024":
-                    aspect_ratio = "16:9"
-                else:
-                    # Calculate GCD for other ratios
-                    from math import gcd
-                    w, h = int(width), int(height)
-                    divisor = gcd(w, h)
-                    aspect_ratio = f"{w//divisor}:{h//divisor}"
+            # Prepare config
+            config_kwargs = {}
             
-            # Prepare config with aspect ratio and optional reference image
-            config_kwargs = {"aspect_ratio": aspect_ratio}
+            # Add aspect_ratio only when NOT using reference images
+            # (aspect_ratio parameter causes "not supported" error when used with reference images)
+            if self.size and not self.input_reference:
+                width, height = map(int, self.size.split('x'))
+                if width < height:
+                    aspect_ratio = "9:16"  # Portrait
+                else:
+                    aspect_ratio = "16:9"  # Landscape
+                config_kwargs["aspect_ratio"] = aspect_ratio
             
             if self.input_reference:
                 # Load the reference image
@@ -230,13 +206,42 @@ class GenerateVideo(BaseTool):
                 
                 print(f"Loading reference image for Veo: {image_path}")
                 
-                # Read the image bytes
-                with open(image_path, 'rb') as img_file:
-                    image_bytes = img_file.read()
+                # Load and resize image to match target aspect ratio
+                from PIL import Image as PILImage
+                from io import BytesIO
                 
-                # Determine MIME type
-                mime_type, _ = mimetypes.guess_type(image_path)
-                if not mime_type or not mime_type.startswith('image/'):
+                with PILImage.open(image_path) as img:
+                    # Convert to RGB if needed
+                    if img.mode != 'RGB':
+                        img = img.convert('RGB')
+                    
+                    # If size is specified, resize to match target aspect ratio using crop
+                    if self.size:
+                        target_width, target_height = map(int, self.size.split('x'))
+                        
+                        # Calculate target aspect ratio
+                        target_ratio = target_width / target_height
+                        img_ratio = img.width / img.height
+                        
+                        # Crop to match aspect ratio (center crop)
+                        if img_ratio > target_ratio:
+                            # Image is wider, crop width
+                            new_width = int(img.height * target_ratio)
+                            left = (img.width - new_width) // 2
+                            img = img.crop((left, 0, left + new_width, img.height))
+                        elif img_ratio < target_ratio:
+                            # Image is taller, crop height
+                            new_height = int(img.width / target_ratio)
+                            top = (img.height - new_height) // 2
+                            img = img.crop((0, top, img.width, top + new_height))
+                        
+                        # Resize to target dimensions
+                        img = img.resize((target_width, target_height), PILImage.Resampling.LANCZOS)
+                    
+                    # Convert to bytes
+                    buffer = BytesIO()
+                    img.save(buffer, format='PNG')
+                    image_bytes = buffer.getvalue()
                     mime_type = "image/png"
                 
                 # Add reference images to config
@@ -253,7 +258,12 @@ class GenerateVideo(BaseTool):
             # Create config with all parameters
             config = GenerateVideosConfig(**config_kwargs)
             
-            print(f"Submitting video generation request to Veo ({model}) with aspect ratio: {aspect_ratio}...")
+            if self.size and self.input_reference:
+                print(f"Submitting video generation request to Veo ({model}) - reference image resized to {self.size} (aspect ratio inferred from image)...")
+            elif self.size:
+                print(f"Submitting video generation request to Veo ({model}) - size: {self.size}...")
+            else:
+                print(f"Submitting video generation request to Veo ({model})...")
             
             # Run blocking operation in thread pool to avoid blocking event loop
             loop = asyncio.get_event_loop()
@@ -286,20 +296,19 @@ class GenerateVideo(BaseTool):
         except Exception as e:
             raise RuntimeError(f"Veo video generation failed: {str(e)}")
 
-
 if __name__ == "__main__":
     import asyncio
     
+    # Basic test invocation (Sora)
     tool = GenerateVideo(
         product_name="Test_Product",
         prompt=(
-            "A person sitting on a bench with on-screen text saying 'Welcome to the future of AI'"
+            "A selfie-style iPhone 15 Pro front-camera vertical video featuring a 35-year-old white male. He speaks in an encouraging tone."
         ),
         seconds="4",
-        size="1280x720",
-        name="test_video_veo",
-        input_reference="test_image",
-        model="veo",  # Test Veo model with aspectRatio parameter
+        size="720x1280",
+        name="test_video_sora",
+        input_reference=None,
     )
     try:
         result = asyncio.run(tool.run())
