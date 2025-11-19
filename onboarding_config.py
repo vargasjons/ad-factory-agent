@@ -5,5 +5,6 @@
 config = {
     "company_name": "[not provided by client]",
     "sora_model": "sora-2",
-    "visual_brand_guidelines": "[not provided by client]"
+    "visual_brand_guidelines": "[not provided by client]",
+    "brand_assets": []
 }

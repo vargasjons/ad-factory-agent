@@ -1,6 +1,7 @@
 import os
 
 from agency_swarm import Agent, ModelSettings
+from agency_swarm.tools import LoadFileAttachment
 from openai.types.shared.reasoning import Reasoning
 
 # Get the absolute path to the current file's directory
@@ -20,6 +21,7 @@ def create_ugc_agent(model: str = "gpt-5.1", reasoning_effort: str = "medium") -
         description="An agent that generates UGC-style advertisement videos and images.",
         instructions="instructions.md",
         tools_folder="./tools",
+        tools=[LoadFileAttachment],
         model=model,
         model_settings=ModelSettings(
             reasoning=Reasoning(summary="auto", effort=reasoning_effort), truncation="auto"

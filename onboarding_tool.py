@@ -35,6 +35,16 @@ class OnboardingTool(BaseTool):
         description="Visual style preferences and brand guidelines for video ads (include aesthetic, mood, colors, etc.)",
         json_schema_extra={"ui:widget": "textarea"},
     )
+    
+    # 4. Brand Assets
+    brand_assets: list[str] = Field(
+        [],
+        description="Upload your brand assets for video ads here (for example: logos, product images, product descriptions). Only images (PNG, JPG) and PDFs are supported at this time. Please use clear, descriptive filenames such as 'logo.png', 'product_image.jpg', or 'product_description.pdf' to help the agent use each asset appropriately.",
+        json_schema_extra={
+            "x-file-upload-path": "./mnt/brand_assets",
+        },
+    )
+    
 
     def run(self):
         """Saves configuration to onboarding_config.py"""
@@ -74,6 +84,7 @@ if __name__ == "__main__":
         company_name="[not provided by client]",
         sora_model="sora-2",
         visual_brand_guidelines="[not provided by client]",
+        brand_assets=[],
     )
     print(tool.run())
 
