@@ -136,7 +136,7 @@ For each segment in the storyboard, create a comprehensive UGC-style video promp
 
 When configuring video prompts, you MUST seamlessly integrate brand assets discovered in Step 1A:
 
-- **If brand logos exist**: Describe the logo placement naturally in the scene (e.g., "holding up a bottle with [brand logo description] clearly visible on the label", "product packaging featuring [brand logo] is positioned on the desk in the background")
+- **If brand logos exist**: ALWAYS integrate logos seamlessly and naturally into the video scene. Describe the logo placement as part of the product or environment (e.g., "holding up a bottle with [brand logo description] clearly visible on the label", "product packaging featuring [brand logo] is positioned on the desk in the background", "branded container with [logo details] in [brand colors]"). The logo should feel like a natural part of the scene, not forced or artificial.
 - **If product images exist**: Use them as reference images AND describe the product in the prompt
 - **Color palette**: Match brand colors from brand assets in lighting, clothing, or background elements
 - **Visual style**: Align the video aesthetic with brand imagery tone (e.g., professional, playful, minimalist)
