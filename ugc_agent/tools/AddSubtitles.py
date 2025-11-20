@@ -113,6 +113,7 @@ class AddSubtitles(BaseTool):
                 file=audio_file,
                 response_format="verbose_json",
                 timestamp_granularities=["word"],
+                temperature=0.0,
             )
 
         print("[OK] Transcription complete")
