@@ -437,8 +437,9 @@ def save_veo_video_with_metadata(gemini_client, video_file, name: str, product_n
     # Step 2: Generate and save spritesheet
     spritesheet_path = os.path.join(videos_dir, f"{name}_spritesheet.jpg")
     spritesheet = generate_spritesheet(video_path, spritesheet_path)
-    if spritesheet:
-        output.extend(create_image_output(spritesheet_path, f"{name}_spritesheet.jpg"))
+    # Commented out image output - keeping only text confirmation
+    # if spritesheet:
+    #     output.extend(create_image_output(spritesheet_path, f"{name}_spritesheet.jpg"))
     
     # Step 3: Extract and save thumbnail (first frame)
     thumbnail_path = os.path.join(videos_dir, f"{name}_thumbnail.jpg")
@@ -448,15 +449,17 @@ def save_veo_video_with_metadata(gemini_client, video_file, name: str, product_n
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         thumbnail_image = Image.fromarray(frame_rgb)
         thumbnail_image.save(thumbnail_path)
-        output.extend(create_image_output(thumbnail_path, f"{name}_thumbnail.jpg"))
+        # Commented out image output - keeping only text confirmation
+        # output.extend(create_image_output(thumbnail_path, f"{name}_thumbnail.jpg"))
     cap.release()
     
     # Step 4: Extract and save the last frame
     last_frame_path = os.path.join(videos_dir, f"{name}_last_frame.jpg")
     last_frame_image = extract_last_frame(video_path, last_frame_path)
     
-    if last_frame_image:
-        output.extend(create_image_output(last_frame_path, f"{name}_last_frame.jpg"))
+    # Commented out image output - keeping only text confirmation
+    # if last_frame_image:
+    #     output.extend(create_image_output(last_frame_path, f"{name}_last_frame.jpg"))
     
     # Step 5: Add final summary message with full path
     output.append(ToolOutputText(type="text", text=f"Video saved to `{name}.mp4`\nPath: {video_path}"))
@@ -483,12 +486,14 @@ def save_video_with_metadata(client: OpenAI, video_id: str, name: str, product_n
     # Step 1: Download and save spritesheet
     spritesheet_path = os.path.join(videos_dir, f"{name}_spritesheet.jpg")
     download_video_variant(client, video_id, "spritesheet", spritesheet_path)
-    output.extend(create_image_output(spritesheet_path, f"{name}_spritesheet.jpg"))
+    # Commented out image output - keeping only text confirmation
+    # output.extend(create_image_output(spritesheet_path, f"{name}_spritesheet.jpg"))
     
     # Step 2: Download and save thumbnail
     thumbnail_path = os.path.join(videos_dir, f"{name}_thumbnail.jpg")
     download_video_variant(client, video_id, "thumbnail", thumbnail_path)
-    output.extend(create_image_output(thumbnail_path, f"{name}_thumbnail.jpg"))
+    # Commented out image output - keeping only text confirmation
+    # output.extend(create_image_output(thumbnail_path, f"{name}_thumbnail.jpg"))
     
     # Step 3: Download and save the actual video
     video_path = os.path.join(videos_dir, f"{name}.mp4")
@@ -498,8 +503,9 @@ def save_video_with_metadata(client: OpenAI, video_id: str, name: str, product_n
     last_frame_path = os.path.join(videos_dir, f"{name}_last_frame.jpg")
     last_frame_image = extract_last_frame(video_path, last_frame_path)
     
-    if last_frame_image:
-        output.extend(create_image_output(last_frame_path, f"{name}_last_frame.jpg"))
+    # Commented out image output - keeping only text confirmation
+    # if last_frame_image:
+    #     output.extend(create_image_output(last_frame_path, f"{name}_last_frame.jpg"))
     
     # Step 5: Add final summary message with full path
     output.append(ToolOutputText(type="text", text=f"Video saved to `{name}.mp4`\nPath: {video_path}\nVideo ID: {video_id}"))

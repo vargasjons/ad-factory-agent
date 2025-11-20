@@ -1,6 +1,7 @@
 """Tool for remixing existing Sora videos."""
 
 import asyncio
+import re
 from typing import Optional, Literal
 from openai import OpenAI
 from pydantic import Field, field_validator, model_validator
@@ -58,6 +59,9 @@ class RemixVideo(BaseTool):
     @field_validator("prompt")
     @classmethod
     def _prompt_not_blank(cls, value: str) -> str:
+        # check if the prompt starts from [*] upfront use regex
+        if re.match(r"^\[.*\]", value) or re.match(r"^\[.*?\]\s+.+", value):
+            raise ValueError("PROMPT CANNNOT CONTAIN VARIABLES!!! YOU HAVE TO REWRITE THE WHOLE PROMPT FROM SCRATCH!!! THIS TOOL IS STATELESS. STOP BEING LAZY AND REWRITE THE WHOLE PROMPT FOR USER'S FEEDBACK.")
         return ensure_not_blank(value, "prompt")
 
     @model_validator(mode='after')

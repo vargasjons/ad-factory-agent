@@ -2,7 +2,7 @@
 
 from typing import Literal, Optional
 import asyncio
-
+import re
 from openai import OpenAI
 from pydantic import Field, field_validator
 
@@ -69,6 +69,8 @@ class GenerateVideo(BaseTool):
     @field_validator("prompt")
     @classmethod
     def _prompt_not_blank(cls, value: str) -> str:
+        if re.match(r"^\[.*\]", value) or re.match(r"^\[.*?\]\s+.+", value):
+            raise ValueError("PROMPT CANNNOT CONTAIN VARIABLES!!! YOU HAVE TO REWRITE THE WHOLE PROMPT FROM SCRATCH!!! THIS TOOL IS STATELESS. STOP BEING LAZY AND REWRITE THE WHOLE PROMPT FOR USER'S FEEDBACK.")
         return ensure_not_blank(value, "prompt")
 
     @field_validator("input_reference")
