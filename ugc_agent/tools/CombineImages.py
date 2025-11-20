@@ -35,15 +35,15 @@ class CombineImages(BaseTool):
     )
     image_names: list[str] = Field(
         ...,
-        description="List of image file names (without extension) to combine.",
+        description="List of image file names (without extension) or full file paths to combine. Can mix both formats.",
     )
     text_instruction: str = Field(
         ...,
         description="Text instruction describing how to combine the images",
     )
-    file_name: str = Field(
+    file_name_or_path: str = Field(
         ...,
-        description="The name for the generated combined image file (without extension)",
+        description="The name (without extension) or full path for the generated combined image file",
     )
     num_variants: int = Field(
         default=1,
@@ -73,11 +73,11 @@ class CombineImages(BaseTool):
             raise ValueError("text_instruction must not be empty")
         return value
 
-    @field_validator("file_name")
+    @field_validator("file_name_or_path")
     @classmethod
     def _filename_not_blank(cls, value: str) -> str:
         if not value.strip():
-            raise ValueError("file_name must not be empty")
+            raise ValueError("file_name_or_path must not be empty")
         return value
 
     @field_validator("num_variants")
@@ -104,16 +104,27 @@ class CombineImages(BaseTool):
         # Step 3: Get product-specific images directory
         images_dir = get_images_dir(self.product_name)
         
-        # Step 4: Load images using image names
+        # Step 4: Load images using image names or full paths
+        from pathlib import Path
         images = []
-        for image_name in self.image_names:
-            image, image_path, load_error = load_image_by_name(
-                image_name, images_dir, [".png", ".jpg", ".jpeg"]
-            )
-            if load_error:
-                raise FileNotFoundError(load_error)
-            images.append(image)
-            print(f"Loaded image: {image_path}")
+        for image_name_or_path in self.image_names:
+            # Try as full path first
+            path = Path(image_name_or_path).expanduser().resolve()
+            
+            if path.exists():
+                # Load from full path
+                image = Image.open(path)
+                print(f"Loaded image from path: {path}")
+                images.append(image)
+            else:
+                # Try as image name without extension
+                image, image_path, load_error = load_image_by_name(
+                    image_name_or_path, images_dir, [".png", ".jpg", ".jpeg"]
+                )
+                if load_error:
+                    raise FileNotFoundError(f"Image not found: '{image_name_or_path}' (tried as path and as name in {images_dir})")
+                images.append(image)
+                print(f"Loaded image: {image_path}")
 
         def combine_single_variant(variant_num: int):
             """Generate a single combined image variant"""
@@ -148,7 +159,7 @@ class CombineImages(BaseTool):
                 return process_variant_result(
                     variant_num,
                     combined_image,
-                    self.file_name,
+                    self.file_name_or_path,
                     self.num_variants,
                     compress_image_for_base64,
                     images_dir,
@@ -182,7 +193,7 @@ if __name__ == "__main__":
             "of the laptop. Remove the background of the logo and make it transparent. Ensure the laptop and "
             "features remain completely unchanged. The logo should look like it's naturally attached."
         ),
-        file_name="laptop_with_logo",
+        file_name_or_path="laptop_with_logo",
         num_variants=2,
     )
     try:
