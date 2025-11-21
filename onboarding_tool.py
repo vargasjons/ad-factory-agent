@@ -16,7 +16,20 @@ class OnboardingTool(BaseTool):
         description="Your company or brand name"
     )
 
-    # 2. Sora Model Selection (for b-rolls and new characters)
+    # 2. Image Model Selection (Nano Banana)
+    image_model: Literal[
+        "gemini-2.5-flash-image-preview",
+        "gemini-3-pro-image-preview"
+    ] = Field(
+        "gemini-2.5-flash-image-preview",
+        description=(
+            "Select the image generation model.\n"
+            "- gemini-2.5-flash-image-preview (Nano Banana): Standard model\n"
+            "- gemini-3-pro-image-preview (Nano Banana Pro): New, higher quality model (recommended)\n"
+        )
+    )
+
+    # 3. Sora Model Selection (for b-rolls and new characters)
     sora_model: Literal[
         "sora-2", 
         "sora-2-pro"
@@ -29,14 +42,14 @@ class OnboardingTool(BaseTool):
         )
     )
 
-    # 3. Brand Guidelines
+    # 4. Brand Guidelines
     visual_brand_guidelines: str = Field(
         ...,
         description="Visual style preferences and brand guidelines for video ads (include aesthetic, mood, colors, etc.)",
         json_schema_extra={"ui:widget": "textarea"},
     )
     
-    # 4. Brand Assets
+    # 5. Brand Assets
     brand_assets: list[str] = Field(
         [],
         description="Upload your brand assets for video ads here (for example: logos, product images, product descriptions). Only images (PNG, JPG) and PDFs are supported at this time. Please use clear, descriptive filenames such as 'logo.png', 'product_image.jpg', or 'product_description.pdf' to help the agent use each asset appropriately.",
@@ -82,6 +95,7 @@ if __name__ == "__main__":
     tool = OnboardingTool(
         # Using defaults from current repository
         company_name="[not provided by client]",
+        image_model="gemini-3-pro-image-preview",
         sora_model="sora-2",
         visual_brand_guidelines="[not provided by client]",
         brand_assets=[],

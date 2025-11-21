@@ -8,7 +8,17 @@ from PIL import Image
 from agents.tool import ToolOutputImage, ToolOutputText
 
 # Constants
-MODEL_NAME = "gemini-2.5-flash-image-preview"
+try:
+    import sys
+    from pathlib import Path
+    # Add project root to path if needed
+    project_root = str(Path(__file__).parent.parent.parent.parent)
+    if project_root not in sys.path:
+        sys.path.append(project_root)
+    from onboarding_config import config
+    MODEL_NAME = config.get("image_model", "gemini-2.5-flash-image-preview")
+except ImportError:
+    MODEL_NAME = "gemini-2.5-flash-image-preview"
 
 # Base MNT directory
 if os.path.exists("/app"):
