@@ -12,7 +12,7 @@ class ListBrandAssets(BaseTool):
     Returns file paths and basic information about each asset.
     
     Brand assets include logos, images, fonts, and other brand materials
-    uploaded during onboarding or added manually to ./mnt/brand_assets/
+    uploaded during onboarding or added manually to ./brand_assets/
     """
     
     include_hidden: bool = Field(
@@ -22,14 +22,14 @@ class ListBrandAssets(BaseTool):
 
     def run(self):
         """
-        Lists all brand assets from the ./mnt/brand_assets folder.
+        Lists all brand assets from the ./brand_assets folder.
         
         Returns:
             A formatted string with paths to all brand assets, organized by file type.
         """
         # Get the root directory (3 levels up from this file: tools -> ugc_agent -> root)
         root_dir = Path(__file__).resolve().parent.parent.parent
-        brand_assets_dir = root_dir / "mnt" / "brand_assets"
+        brand_assets_dir = root_dir / "brand_assets"
         
         # Check if the directory exists
         if not brand_assets_dir.exists():
@@ -37,7 +37,7 @@ class ListBrandAssets(BaseTool):
                 f"Brand assets directory does not exist: {brand_assets_dir}\n\n"
                 "To add brand assets:\n"
                 "1. Run the onboarding tool and upload files, or\n"
-                "2. Manually create the folder and add files to: ./mnt/brand_assets/"
+                "2. Manually create the folder and add files to: ./brand_assets/"
             )
         
         # Get all files in the directory (recursively)
@@ -66,7 +66,7 @@ class ListBrandAssets(BaseTool):
                 f"No brand assets found in: {brand_assets_dir}\n\n"
                 "To add brand assets:\n"
                 "1. Run the onboarding tool and upload files, or\n"
-                "2. Manually add files to: ./mnt/brand_assets/"
+                "2. Manually add files to: ./brand_assets/"
             )
         
         # Organize by file type

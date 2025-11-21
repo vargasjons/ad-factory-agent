@@ -54,7 +54,7 @@ class OnboardingTool(BaseTool):
         [],
         description="Upload your brand assets for video ads here (for example: logos, product images, product descriptions). Only images (PNG, JPG) and PDFs are supported at this time. Please use clear, descriptive filenames such as 'logo.png', 'product_image.jpg', or 'product_description.pdf' to help the agent use each asset appropriately.",
         json_schema_extra={
-            "x-file-upload-path": "./mnt/brand_assets",
+            "x-file-upload-path": "./brand_assets",
         },
     )
     
