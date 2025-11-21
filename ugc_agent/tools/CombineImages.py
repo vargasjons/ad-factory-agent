@@ -178,8 +178,10 @@ class CombineImages(BaseTool):
         result_text = create_result_summary(results, "Generated")
         print(result_text)
 
+        return results
+
         # Step 7: Return array of image URLs
-        return create_image_urls(results, include_text_labels=False)
+        #return create_image_urls(results, include_text_labels=False)
 
 if __name__ == "__main__":
     import asyncio

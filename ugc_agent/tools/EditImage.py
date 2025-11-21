@@ -156,7 +156,8 @@ class EditImage(BaseTool):
         print(result_text)
 
         # Step 7: Return array of image URLs
-        return create_image_urls(results, include_text_labels=False)
+        # return create_image_urls(results, include_text_labels=False)
+        return results
 
 if __name__ == "__main__":
     import asyncio

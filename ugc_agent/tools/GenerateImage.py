@@ -142,7 +142,8 @@ class GenerateImage(BaseTool):
         print(result_text)
 
         # Step 6: Return array of image URLs
-        return create_image_urls(results, include_text_labels=True)
+        # return create_image_urls(results, include_text_labels=True)
+        return results
 
 if __name__ == "__main__":
     import asyncio
