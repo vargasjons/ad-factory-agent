@@ -1,33 +1,26 @@
-import os
+from agents import ModelSettings
+from openai.types.shared import Reasoning
 
-from agency_swarm import Agent, ModelSettings
-from openai.types.shared.reasoning import Reasoning
+from agency_swarm import Agent
 
-# Get the absolute path to the current file's directory
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-
-def create_brand_agent(model: str = "gpt-5.1", reasoning_effort: str = "medium") -> Agent:
-    """Factory that returns a fresh BrandAgent instance.
-    Use this in tests to avoid reusing a singleton across multiple agencies.
-    """
-    return Agent(
-        name="BrandAgent",
-        description="Responsible for creating ad scripts and copy based on client briefs and brand guidelines.",
-        instructions="instructions.md",
-        model=model,
-        model_settings=ModelSettings(
-            reasoning=Reasoning(summary="auto", effort=reasoning_effort), truncation="auto"
-        ),   
-    )
-
+brand_agent = Agent(
+    name="BrandAgent",
+    description="Responsible for creating ad scripts and copy based on client briefs and brand guidelines.",
+    instructions="./instructions.md",
+    tools_folder="./tools",
+    files_folder="./files",
+    model="gpt-5.2",
+    model_settings=ModelSettings(
+        reasoning=Reasoning(effort="medium", summary="auto"),
+        truncation="auto",
+    ),
+)
 
 if __name__ == "__main__":
     from dotenv import load_dotenv
+
     from agency_swarm import Agency
 
     load_dotenv()
-    
-    agent = create_brand_agent()
-    agency = Agency(agent)
+    agency = Agency(brand_agent)
     agency.terminal_demo()
