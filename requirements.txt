@@ -1,5 +1,6 @@
 agency-swarm[fastapi]>=1.2.1
-openai>=1.35.10
+fastapi
+uvicorn
 python-dotenv
 numpy
 pillow
