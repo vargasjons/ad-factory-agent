@@ -1,11 +1,11 @@
 # only listed properties are used by the system
 
 [project]
-name = "ad-factory-agency"
-description = "UGC Ad Factory – AI-powered short-form video ad creation agency"
-version = "0.1.0"
+name = "my-agency"
+description = "My awesome agency"
+version = "0.0.1"
 license = { text = "MIT" }
-keywords = ["agency-swarm", "ugc", "video-ads", "agencii"]
+keywords = ["agency-swarm", "agencii"]
 
 [tool.template]
 version = "0.0.2"
