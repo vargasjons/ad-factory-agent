@@ -1,13 +1,14 @@
 import os
 
-from brand_agent import brand_agent
 from dotenv import load_dotenv
+
+load_dotenv()
+
+from brand_agent import brand_agent
 from strategy_agent import strategy_agent
 from ugc_agent import ugc_agent
 
 from agency_swarm import Agency
-
-load_dotenv()
 
 
 def render_shared_instructions():
