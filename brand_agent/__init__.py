@@ -1,3 +1,3 @@
-from .brand_agent import brand_agent
+from .brand_agent import create_brand_agent
 
-__all__ = ["brand_agent"]
+__all__ = ["create_brand_agent"]
